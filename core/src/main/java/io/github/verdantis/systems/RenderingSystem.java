@@ -17,10 +17,11 @@ import java.util.Map;
 
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.Mappers;
 
 public class RenderingSystem extends SortedIteratingSystem {
-    private static final int PPM = 256; // Pixel per meters
+    public static final int PPM = 256; // Pixel per meters
     private final Camera camera;
     private final Viewport viewport;
     private final SpriteBatch batch;
@@ -31,7 +32,7 @@ public class RenderingSystem extends SortedIteratingSystem {
             int z2 = Mappers.transform.get(e2).z;
             return z1 - z2;
         });
-        viewport = new FitViewport(9, 16);
+        viewport = new FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
         camera = viewport.getCamera();
         batch = new SpriteBatch();
     }
