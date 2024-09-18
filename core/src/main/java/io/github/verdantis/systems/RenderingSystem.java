@@ -53,15 +53,15 @@ public class RenderingSystem extends SortedIteratingSystem {
         if (region == null) {
             return;
         }
-        float width = region.getRegionWidth();
-        float height = region.getRegionHeight();
+        float width = transform.width;
+        float height = transform.height;
 
         float originX = width / 2;
         float originY = height / 2;
-        batch.draw(region, transform.position.x - originX, transform.position.y - originY,
+        batch.draw(region, transform.position.x, transform.position.y,
             originX, originY,
             width, height,
-            transform.scale.x / PPM, transform.scale.y / PPM, transform.rotation);
+            1f, 1f, transform.rotation);
     }
 
     public void resize(int w, int h) {

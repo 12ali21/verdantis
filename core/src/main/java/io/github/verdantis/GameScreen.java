@@ -5,19 +5,20 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import io.github.verdantis.components.TextureComponent;
+import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.systems.ClickingSystem;
+import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.RenderingSystem;
 import io.github.verdantis.utils.Constants;
-import io.github.verdantis.utils.Mappers;
+import io.github.verdantis.utils.Utils;
 
 public class GameScreen extends ScreenAdapter {
     private Engine engine;
-    private AssetManager assets;
+    private final AssetManager assets;
     private TextureAtlas atlas;
 
     public GameScreen(AssetManager assets) {
@@ -29,9 +30,17 @@ public class GameScreen extends ScreenAdapter {
         atlas = new TextureAtlas(Gdx.files.internal("sprites.atlas"));
 
         engine = new Engine();
-        engine.addSystem(new RenderingSystem());
+        RenderingSystem renderingSystem = new RenderingSystem();
+        InputSystem inputSystem = new InputSystem(renderingSystem.getCamera());
+        Gdx.input.setInputProcessor(inputSystem);
+        ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
+
+        engine.addSystem(renderingSystem);
+        engine.addSystem(inputSystem);
+        engine.addSystem(clickingSystem);
 
         createTiles();
+        createSeedTray();
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
@@ -49,16 +58,9 @@ public class GameScreen extends ScreenAdapter {
 
         for (int i = 0; i < numLines; i++) {
             for (int j = 0; j < lineLength; j++) {
-                TextureComponent textureC = new TextureComponent();
-                textureC.region = tile_region;
-
-                TransformComponent transformC = new TransformComponent();
-                transformC.position.set(paddingLeft + i + 0.5f, paddingBottom + j + 0.5f);
-                transformC.z = 0;
-
-                Entity tileEntity = engine.createEntity();
-                tileEntity.add(textureC);
-                tileEntity.add(transformC);
+                Entity tileEntity = Utils.createEntity(engine, tile_region, paddingLeft + i,
+                        paddingBottom + j, 0
+                );
                 engine.addEntity(tileEntity);
             }
         }
@@ -69,29 +71,52 @@ public class GameScreen extends ScreenAdapter {
         TextureRegion gray_bg = atlas.findRegion("gray_bg");
         TextureRegion green_bg = atlas.findRegion("green_bg");
 
-        TextureComponent textureC = new TextureComponent();
-        textureC.region = green_bg;
-        TransformComponent transformC = new TransformComponent();
-        transformC.position.set(Constants.WORLD_WIDTH / 2f, (greenLength + bottomPad) / 2f);
-        transformC.scale.set(Constants.WORLD_WIDTH, greenLength + bottomPad);
-        transformC.z = -1;
-        Entity entity = engine.createEntity();
-        entity.add(textureC);
-        entity.add(transformC);
+        Entity entity = Utils.createEntity(engine, gray_bg, 0,
+                0, -2
+        );
+        entity.getComponent(TransformComponent.class).setSize(Constants.WORLD_WIDTH,
+                Constants.WORLD_HEIGHT
+        );
+        engine.addEntity(entity);
+
+        entity = Utils.createEntity(engine, green_bg, 0,
+                0, -1
+        );
+        entity.getComponent(TransformComponent.class).setSize(Constants.WORLD_WIDTH,
+                greenLength + bottomPad
+        );
         engine.addEntity(entity);
 
 
-        textureC = new TextureComponent();
-        textureC.region = gray_bg;
-        transformC = new TransformComponent();
-        transformC.position.set(Constants.WORLD_WIDTH / 2f, Constants.WORLD_HEIGHT / 2f);
-        transformC.z = -2;
-        transformC.scale.set(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
-        entity = engine.createEntity();
-        entity.add(textureC);
-        entity.add(transformC);
+    }
+
+    private void createSeedTray() {
+        TextureRegion bg_region = atlas.findRegion("tile_border");
+        TextureRegion plant_region = atlas.findRegion("green_plant");
+        float bg_scale = 0.8f;
+        float plant_scale = 0.5f;
+
+        // find the bottom middle
+        float middleX = Constants.WORLD_WIDTH / 2f;
+        float middleY = 1f;
+
+        Entity entity = Utils.createEntity(engine, bg_region, 0, 0, 1);
+        TransformComponent transform = entity.getComponent(TransformComponent.class);
+        transform.setSize(bg_scale, bg_scale);
+        transform.setCenter(middleX, middleY);
+
         engine.addEntity(entity);
 
+        entity = Utils.createEntity(engine, plant_region, 0, 0, 2);
+        transform = entity.getComponent(TransformComponent.class);
+        transform.setSize(plant_scale, plant_scale);
+        transform.setCenter(middleX, middleY);
+
+        ClickableComponent clickableComponent = new ClickableComponent();
+        clickableComponent.containerScale = bg_scale / plant_scale;
+        entity.add(clickableComponent);
+
+        engine.addEntity(entity);
     }
 
     @Override
@@ -103,8 +128,7 @@ public class GameScreen extends ScreenAdapter {
     public void resize(int width, int height) {
         if (engine != null) {
             RenderingSystem system = engine.getSystem(RenderingSystem.class);
-            if (system != null)
-                system.resize(width, height);
+            if (system != null) system.resize(width, height);
         }
     }
 
