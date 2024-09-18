@@ -9,10 +9,14 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import io.github.verdantis.components.ClickableComponent;
+import io.github.verdantis.components.GameState;
+import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.systems.ClickingSystem;
+import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.RenderingSystem;
+import io.github.verdantis.systems.SeedSystem;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.Utils;
 
@@ -20,6 +24,8 @@ public class GameScreen extends ScreenAdapter {
     private Engine engine;
     private final AssetManager assets;
     private TextureAtlas atlas;
+    private GameState gameState;
+
 
     public GameScreen(AssetManager assets) {
         this.assets = assets;
@@ -28,16 +34,22 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void show() {
         atlas = new TextureAtlas(Gdx.files.internal("sprites.atlas"));
+        gameState = new GameState();
 
         engine = new Engine();
         RenderingSystem renderingSystem = new RenderingSystem();
         InputSystem inputSystem = new InputSystem(renderingSystem.getCamera());
         Gdx.input.setInputProcessor(inputSystem);
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
+        SeedSystem seedSystem = new SeedSystem(gameState);
+        DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
+
 
         engine.addSystem(renderingSystem);
         engine.addSystem(inputSystem);
         engine.addSystem(clickingSystem);
+        engine.addSystem(seedSystem);
+        engine.addSystem(draggingSystem);
 
         createTiles();
         createSeedTray();
@@ -116,12 +128,16 @@ public class GameScreen extends ScreenAdapter {
         clickableComponent.containerScale = bg_scale / plant_scale;
         entity.add(clickableComponent);
 
+        SeedComponent seedComponent = new SeedComponent();
+        entity.add(seedComponent);
+
         engine.addEntity(entity);
     }
 
     @Override
     public void render(float delta) {
         engine.update(delta);
+        System.out.println(gameState.getState());
     }
 
     @Override

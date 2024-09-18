@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.Vector3;
 public class InputSystem extends EntitySystem implements InputProcessor {
     private final Camera camera;
     private boolean isClicked = false;
-    private Vector2 clickedPosition = new Vector2();
+    private Vector2 tmp2 = new Vector2();
     private final Vector2 clickedPositionWorld = new Vector2();
-    private Vector3 tmp = new Vector3();
+    private Vector3 tmp3 = new Vector3();
 
     public InputSystem(Camera camera) {
         this.camera = camera;
@@ -36,7 +36,7 @@ public class InputSystem extends EntitySystem implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         isClicked = true;
-        clickedPosition.set(screenX, screenY);
+        tmp2.set(screenX, screenY);
         return false;
     }
 
@@ -68,10 +68,17 @@ public class InputSystem extends EntitySystem implements InputProcessor {
 
 
     public Vector2 getClickedPositionInWorld() {
-        tmp.set(clickedPosition.x, clickedPosition.y, 0);
-        tmp = camera.unproject(tmp);
-        clickedPositionWorld.set(tmp.x, tmp.y);
-        return clickedPositionWorld;
+        tmp3.set(tmp2.x, tmp2.y, 0);
+        tmp3 = camera.unproject(tmp3);
+        tmp2.set(tmp3.x, tmp3.y);
+        return tmp2;
+    }
+
+    public Vector2 getMousePositionInWorld() {
+        tmp3.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        tmp3 = camera.unproject(tmp3);
+        tmp2.set(tmp3.x, tmp3.y);
+        return tmp2;
     }
 
     public boolean isMouseDown() {
