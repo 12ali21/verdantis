@@ -1,10 +1,13 @@
 package io.github.verdantis.utils;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
 
+import io.github.verdantis.components.BulletComponent;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.DraggableComponent;
+import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TextureComponent;
@@ -36,4 +39,14 @@ public class Mappers {
 
     public static final ComponentMapper<VelocityComponent> velocity = ComponentMapper.getFor(
             VelocityComponent.class);
+
+    public static final ComponentMapper<EnemyComponent> enemy = ComponentMapper.getFor(
+            EnemyComponent.class);
+
+    public static final ComponentMapper<BulletComponent> bullet = ComponentMapper.getFor(
+            BulletComponent.class);
+
+
+    public static final ComponentMapper<PlantComponent> plant = ComponentMapper.getFor(
+            PlantComponent.class);;
 }

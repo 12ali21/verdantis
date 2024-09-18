@@ -17,6 +17,7 @@ import io.github.verdantis.systems.BulletSystem;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.EnemyManagerSystem;
+import io.github.verdantis.systems.EnemySystem;
 import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.PlantingSystem;
 import io.github.verdantis.systems.RenderingSystem;
@@ -54,6 +55,7 @@ public class GameScreen extends ScreenAdapter {
         VelocitySystem velocitySystem = new VelocitySystem();
         BulletSystem bulletSystem = new BulletSystem();
         EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(atlas);
+        EnemySystem enemySystem = new EnemySystem();
 
 
         engine.addSystem(renderingSystem);
@@ -66,6 +68,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(velocitySystem);
         engine.addSystem(bulletSystem);
         engine.addSystem(enemyManagerSystem);
+        engine.addSystem(enemySystem);
 
         createTiles();
         createSeedTray();

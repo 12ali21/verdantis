@@ -23,11 +23,23 @@ public class PlantingSystem extends IteratingSystem {
         PlantComponent plantComponent = Mappers.plantable.get(entity);
 
 
-        if (draggableComponent.isDragging || plantComponent.isPlanted) {
-            return;
+        if (!draggableComponent.isDragging && !plantComponent.isPlanted) {
+            plant(entity, transformComponent, plantComponent);
         }
 
-        ImmutableArray<Entity> tilesArray = getEngine().getEntitiesFor(Family.all(TileComponent.class).get());
+        if (plantComponent.isPlanted) {
+            if (plantComponent.health <= 0) {
+                Mappers.tile.get(plantComponent.occupyingTile).isOccupied = false;
+                getEngine().removeEntity(entity);
+            }
+        }
+    }
+
+    private void plant(Entity entity, TransformComponent transformComponent,
+            PlantComponent plantComponent
+    ) {
+        ImmutableArray<Entity> tilesArray =
+                getEngine().getEntitiesFor(Family.all(TileComponent.class).get());
         for (Entity tile : tilesArray) {
             TileComponent tileComponent = Mappers.tile.get(tile);
             if (tileComponent.isOccupied) {
@@ -36,6 +48,7 @@ public class PlantingSystem extends IteratingSystem {
             TransformComponent tileTransform = Mappers.transform.get(tile);
             if (tileTransform.getRect().contains(transformComponent.getCenter())) {
                 transformComponent.setCenter(tileTransform.getCenter());
+                plantComponent.occupyingTile = tile;
                 plantComponent.isPlanted = true;
                 tileComponent.isOccupied = true;
                 break;

@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class TransformComponent implements Component {
-    private static Rectangle rect = new Rectangle();
-    private static Vector2 tmp2 = new Vector2();
+    private final Rectangle rect = new Rectangle();
+    private final Vector2 tmp2 = new Vector2();
     public final Vector2 position = new Vector2();
     public float width = 1, height = 1;
     public float rotation = 0f;
