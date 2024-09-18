@@ -13,12 +13,15 @@ import io.github.verdantis.components.GameState;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.systems.BulletSystem;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.PlantingSystem;
 import io.github.verdantis.systems.RenderingSystem;
 import io.github.verdantis.systems.SeedSystem;
+import io.github.verdantis.systems.ShootingSystem;
+import io.github.verdantis.systems.VelocitySystem;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.Utils;
 
@@ -46,6 +49,9 @@ public class GameScreen extends ScreenAdapter {
         SeedSystem seedSystem = new SeedSystem(gameState);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
         PlantingSystem plantingSystem = new PlantingSystem();
+        ShootingSystem shootingSystem = new ShootingSystem(atlas);
+        VelocitySystem velocitySystem = new VelocitySystem();
+        BulletSystem bulletSystem = new BulletSystem();
 
 
         engine.addSystem(renderingSystem);
@@ -54,6 +60,9 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(seedSystem);
         engine.addSystem(draggingSystem);
         engine.addSystem(plantingSystem);
+        engine.addSystem(shootingSystem);
+        engine.addSystem(velocitySystem);
+        engine.addSystem(bulletSystem);
 
         createTiles();
         createSeedTray();

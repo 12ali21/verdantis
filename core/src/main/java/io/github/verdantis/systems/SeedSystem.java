@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
+import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.GameState;
 import io.github.verdantis.components.DraggableComponent;
@@ -50,6 +51,12 @@ public class SeedSystem extends IteratingSystem {
 
             PlantComponent plantComponent = new PlantComponent();
             seedEntity.add(plantComponent);
+
+            CanonComponent canonComponent = new CanonComponent();
+            canonComponent.bulletOffset.set(0, 0.4f);
+            canonComponent.bulletSpeed = 2f;
+            canonComponent.bulletCooldown = 2f;
+            seedEntity.add(canonComponent);
 
             getEngine().addEntity(seedEntity);
 
