@@ -11,10 +11,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.GameState;
 import io.github.verdantis.components.SeedComponent;
+import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.InputSystem;
+import io.github.verdantis.systems.PlantingSystem;
 import io.github.verdantis.systems.RenderingSystem;
 import io.github.verdantis.systems.SeedSystem;
 import io.github.verdantis.utils.Constants;
@@ -43,6 +45,7 @@ public class GameScreen extends ScreenAdapter {
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
         SeedSystem seedSystem = new SeedSystem(gameState);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
+        PlantingSystem plantingSystem = new PlantingSystem();
 
 
         engine.addSystem(renderingSystem);
@@ -50,6 +53,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(clickingSystem);
         engine.addSystem(seedSystem);
         engine.addSystem(draggingSystem);
+        engine.addSystem(plantingSystem);
 
         createTiles();
         createSeedTray();
@@ -64,7 +68,7 @@ public class GameScreen extends ScreenAdapter {
         int greenLength = 3;
 
         float paddingLeft = (Constants.WORLD_WIDTH - numLines) / 2f;
-        float paddingBottom = 2.5f;
+        float paddingBottom = 1.5f;
 
         createBackgrounds(greenLength, paddingBottom);
 
@@ -73,6 +77,11 @@ public class GameScreen extends ScreenAdapter {
                 Entity tileEntity = Utils.createEntity(engine, tile_region, paddingLeft + i,
                         paddingBottom + j, 0
                 );
+                TileComponent tileComponent = new TileComponent();
+                if (j >= greenLength) {
+                    tileComponent.isOccupied = true;
+                }
+                tileEntity.add(tileComponent);
                 engine.addEntity(tileEntity);
             }
         }
@@ -105,12 +114,12 @@ public class GameScreen extends ScreenAdapter {
     private void createSeedTray() {
         TextureRegion bg_region = atlas.findRegion("tile_border");
         TextureRegion plant_region = atlas.findRegion("green_plant");
-        float bg_scale = 0.8f;
-        float plant_scale = 0.5f;
+        float bg_scale = 0.85f;
+        float plant_scale = 0.6f;
 
         // find the bottom middle
         float middleX = Constants.WORLD_WIDTH / 2f;
-        float middleY = 1f;
+        float middleY = .7f;
 
         Entity entity = Utils.createEntity(engine, bg_region, 0, 0, 1);
         TransformComponent transform = entity.getComponent(TransformComponent.class);
@@ -129,6 +138,8 @@ public class GameScreen extends ScreenAdapter {
         entity.add(clickableComponent);
 
         SeedComponent seedComponent = new SeedComponent();
+        seedComponent.plantWidth = 0.8f;
+        seedComponent.plantHeight = 0.8f;
         entity.add(seedComponent);
 
         engine.addEntity(entity);

@@ -7,6 +7,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.GameState;
 import io.github.verdantis.components.DraggableComponent;
+import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
@@ -31,6 +32,8 @@ public class SeedSystem extends IteratingSystem {
         }
 
         ClickableComponent clickableComponent = Mappers.clickable.get(entity);
+        SeedComponent seedComponent = Mappers.seed.get(entity);
+
         if (clickableComponent.clicked) {
             clickableComponent.clicked = false;
 
@@ -39,11 +42,15 @@ public class SeedSystem extends IteratingSystem {
 
             Entity seedEntity = Utils.createEntity(getEngine(), textureComponent.region,
                     transformComponent.position.x, transformComponent.position.y,
-                    transformComponent.width, transformComponent.height, transformComponent.z
+                    seedComponent.plantWidth, seedComponent.plantHeight, transformComponent.z
             );
             DraggableComponent draggableComponent = new DraggableComponent();
             draggableComponent.isDragging = true;
             seedEntity.add(draggableComponent);
+
+            PlantComponent plantComponent = new PlantComponent();
+            seedEntity.add(plantComponent);
+
             getEngine().addEntity(seedEntity);
 
             gameState.changeState(GameState.State.PLANTING);
