@@ -16,6 +16,7 @@ import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.systems.BulletSystem;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
+import io.github.verdantis.systems.EnemyManagerSystem;
 import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.PlantingSystem;
 import io.github.verdantis.systems.RenderingSystem;
@@ -52,6 +53,7 @@ public class GameScreen extends ScreenAdapter {
         ShootingSystem shootingSystem = new ShootingSystem(atlas);
         VelocitySystem velocitySystem = new VelocitySystem();
         BulletSystem bulletSystem = new BulletSystem();
+        EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(atlas);
 
 
         engine.addSystem(renderingSystem);
@@ -63,6 +65,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(shootingSystem);
         engine.addSystem(velocitySystem);
         engine.addSystem(bulletSystem);
+        engine.addSystem(enemyManagerSystem);
 
         createTiles();
         createSeedTray();
@@ -72,22 +75,16 @@ public class GameScreen extends ScreenAdapter {
     private void createTiles() {
         TextureRegion tile_region = atlas.findRegion("tile_border");
 
-        int numLines = 5;
-        int lineLength = 15;
-        int greenLength = 3;
 
-        float paddingLeft = (Constants.WORLD_WIDTH - numLines) / 2f;
-        float paddingBottom = 1.5f;
+        createBackgrounds(Constants.GREEN_LENGTH, Constants.PADDING_BOTTOM);
 
-        createBackgrounds(greenLength, paddingBottom);
-
-        for (int i = 0; i < numLines; i++) {
-            for (int j = 0; j < lineLength; j++) {
-                Entity tileEntity = Utils.createEntity(engine, tile_region, paddingLeft + i,
-                        paddingBottom + j, 0
+        for (int i = 0; i < Constants.NUM_LINES; i++) {
+            for (int j = 0; j < Constants.LINE_LENGTH; j++) {
+                Entity tileEntity = Utils.createEntity(engine, tile_region, Constants.PADDING_LEFT + i,
+                        Constants.PADDING_BOTTOM + j, 0
                 );
                 TileComponent tileComponent = new TileComponent();
-                if (j >= greenLength) {
+                if (j >= Constants.GREEN_LENGTH) {
                     tileComponent.isOccupied = true;
                 }
                 tileEntity.add(tileComponent);
@@ -130,18 +127,10 @@ public class GameScreen extends ScreenAdapter {
         float middleX = Constants.WORLD_WIDTH / 2f;
         float middleY = .7f;
 
-        Entity entity = Utils.createEntity(engine, bg_region, 0, 0, 1);
-        TransformComponent transform = entity.getComponent(TransformComponent.class);
-        transform.setSize(bg_scale, bg_scale);
-        transform.setCenter(middleX, middleY);
-
+        Entity entity = Utils.createEntityCenter(engine, bg_region, middleX, middleY, bg_scale, bg_scale, 1);
         engine.addEntity(entity);
 
-        entity = Utils.createEntity(engine, plant_region, 0, 0, 2);
-        transform = entity.getComponent(TransformComponent.class);
-        transform.setSize(plant_scale, plant_scale);
-        transform.setCenter(middleX, middleY);
-
+        entity = Utils.createEntityCenter(engine, plant_region, middleX, middleY, plant_scale, plant_scale, 2);
         ClickableComponent clickableComponent = new ClickableComponent();
         clickableComponent.containerScale = bg_scale / plant_scale;
         entity.add(clickableComponent);
