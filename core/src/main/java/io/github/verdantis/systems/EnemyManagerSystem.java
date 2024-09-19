@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.verdantis.components.EnemyComponent;
+import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.MovementComponent;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.DrawingPriorities;
@@ -21,12 +22,19 @@ public class EnemyManagerSystem extends EntitySystem {
     private RandomXS128 random = new RandomXS128();
     private Vector2 tmp2 = new Vector2();
 
+    private boolean debugSpawn = false;
+
     public EnemyManagerSystem(TextureAtlas atlas) {
         this.atlas = atlas;
     }
 
     @Override
     public void update(float deltaTime) {
+        if (!debugSpawn) {
+            debugSpawn = true;
+            spawnEnemy(Constants.PADDING_LEFT + 2.5f, 4f);
+        }
+
         timeSinceLastSpawn += deltaTime;
         if (timeSinceLastSpawn >= ENEMY_SPAWN_TIME) {
             timeSinceLastSpawn = 0f;
@@ -35,21 +43,27 @@ public class EnemyManagerSystem extends EntitySystem {
     }
 
     private void spawnEnemy() {
-        EnemyType enemyType = EnemyType.GREEN_SLIME; //temp
-
         // choose a random line to spawn
         int line = random.nextInt(Constants.NUM_LINES);
         float x = Constants.PADDING_LEFT + line + 0.5f;
         float y = Constants.WORLD_HEIGHT;
+        spawnEnemy(x, y);
+    }
 
+    private void spawnEnemy(float x, float y) {
+        EnemyType enemyType = EnemyType.GREEN_SLIME; //temp
 
         Entity enemy = Utils.createEntityCenter(getEngine(), getEnemyRegion(enemyType), x, y, ENEMY_SIZE,
                 ENEMY_SIZE, DrawingPriorities.ENEMIES
         );
         EnemyComponent enemyComponent = new EnemyComponent();
-        enemyComponent.health = 10f;
+
         enemyComponent.maxSpeed = 0.5f;
         enemy.add(enemyComponent);
+
+        HealthComponent healthComponent = new HealthComponent();
+        healthComponent.setHealth(10f);
+        enemy.add(healthComponent);
 
         MovementComponent movementComponent = new MovementComponent();
         movementComponent.maxSpeed = enemyComponent.maxSpeed;

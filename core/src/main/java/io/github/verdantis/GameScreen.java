@@ -1,18 +1,30 @@
 package io.github.verdantis;
 
+import static io.github.verdantis.systems.RenderingSystem.PPM;
+
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.RandomXS128;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 
 import java.util.Random;
 
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.GameState;
+import io.github.verdantis.components.HealthComponent;
+import io.github.verdantis.components.RootComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
@@ -26,6 +38,7 @@ import io.github.verdantis.systems.FreezingSystem;
 import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.PlantingSystem;
 import io.github.verdantis.systems.RenderingSystem;
+import io.github.verdantis.systems.RootsSystem;
 import io.github.verdantis.systems.SeedSystem;
 import io.github.verdantis.systems.ShootingSystem;
 import io.github.verdantis.systems.MovementSystem;
@@ -56,6 +69,7 @@ public class GameScreen extends ScreenAdapter {
         initializeSystems();
 
         createTree();
+        createRoots();
         createTiles(3);
         createSeedTray();
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -79,6 +93,7 @@ public class GameScreen extends ScreenAdapter {
         FireDamageSystem fireDamageSystem = new FireDamageSystem();
         FreezingSystem freezingSystem = new FreezingSystem();
         WindSystem windSystem = new WindSystem();
+        RootsSystem rootsSystem = new RootsSystem();
 
         engine.addSystem(renderingSystem);
         engine.addSystem(inputSystem);
@@ -95,6 +110,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(freezingSystem);
         engine.addSystem(windSystem);
         engine.addSystem(uiManager);
+        engine.addSystem(rootsSystem);
     }
 
     private void createTree() {
@@ -105,6 +121,67 @@ public class GameScreen extends ScreenAdapter {
                 Constants.WORLD_WIDTH / 2f + 0.3f, 0.2f, width, height, DrawingPriorities.TREE
         );
         engine.addEntity(treeEntity);
+    }
+
+    private void createRoots() {
+        TextureRegion rootsRegion = getRootRegion();
+        float width = 1;
+        float height = Constants.WORLD_HEIGHT;
+
+        for (int i = 0; i < Constants.NUM_LINES; i++) {
+            Entity rootsEntity = Utils.createEntity(engine, rootsRegion,
+                    Constants.PADDING_LEFT + i, 1.7f - height, width, height, DrawingPriorities.ROOTS
+            );
+
+            HealthComponent healthComponent = new HealthComponent();
+            healthComponent.setHealth(4);
+            rootsEntity.add(healthComponent);
+
+            RootComponent rootComponent = new RootComponent();
+            rootsEntity.add(rootComponent);
+
+            engine.addEntity(rootsEntity);
+        }
+    }
+
+    // Create a long texture region made up of multiple root textures
+    private TextureRegion getRootRegion() {
+        TextureRegion endRegion = atlas.findRegion("root_end");
+        TextureRegion middleRegion = atlas.findRegion("root_middle");
+
+        // Set up a frame buffer to draw on
+        FrameBuffer frameBuffer =
+                new FrameBuffer(Pixmap.Format.RGBA8888, PPM, ((int) Constants.WORLD_HEIGHT) * PPM,
+                        false
+                );
+
+        // Set up the viewport
+        FillViewport viewport = new FillViewport(1, Constants.WORLD_HEIGHT);
+        viewport.update(1, (int) Constants.WORLD_HEIGHT, true);
+        SpriteBatch spriteBatch = new SpriteBatch();
+
+        frameBuffer.begin();
+        spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+        spriteBatch.begin();
+
+        for (int i = 0; i < (int) Constants.WORLD_HEIGHT - 1; i++) {
+            spriteBatch.draw(middleRegion, 0, i, 1, 1);
+        }
+        spriteBatch.draw(endRegion, 0, ((int) Constants.WORLD_HEIGHT) - 1f, 1, 1);
+
+        spriteBatch.end();
+        frameBuffer.end();
+        spriteBatch.dispose();
+
+        // Get the texture region from the frame buffer
+        Texture combinedTexture = frameBuffer.getColorBufferTexture();
+        TextureRegion combinedRegion =
+                new TextureRegion(combinedTexture, 0, 0, combinedTexture.getWidth(),
+                        (int) (combinedTexture.getHeight() - PPM * 0.65f)
+                );
+        combinedRegion.flip(false, true);
+
+        return combinedRegion;
     }
 
     private void createTiles(int numElements) {

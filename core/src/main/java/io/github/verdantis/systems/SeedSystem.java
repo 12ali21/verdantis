@@ -9,6 +9,7 @@ import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.GameState;
 import io.github.verdantis.components.DraggableComponent;
+import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TextureComponent;
@@ -61,6 +62,9 @@ public class SeedSystem extends IteratingSystem {
             PlantComponent plantComponent = new PlantComponent();
             plantComponent.soulCost = seedComponent.soulCost;
             seedEntity.add(plantComponent);
+
+            HealthComponent healthComponent = new HealthComponent();
+            seedEntity.add(healthComponent);
 
             CanonComponent canonComponent = new CanonComponent();
             canonComponent.bulletOffset.set(0, 0.4f);

@@ -8,8 +8,10 @@ import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.FreezingComponent;
+import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.PlantComponent;
+import io.github.verdantis.components.RootComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TileComponent;
@@ -61,4 +63,10 @@ public class Mappers {
 
     public static final ComponentMapper<WindComponent> wind = ComponentMapper.getFor(
             WindComponent.class);
+
+    public static final ComponentMapper<HealthComponent> health = ComponentMapper.getFor(
+            HealthComponent.class);
+
+    public static final ComponentMapper<RootComponent> roots = ComponentMapper.getFor(
+            RootComponent.class);
 }

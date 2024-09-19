@@ -8,6 +8,7 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import io.github.verdantis.UIManager;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.DraggableComponent;
+import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
@@ -26,6 +27,7 @@ public class PlantingSystem extends IteratingSystem {
         TransformComponent transformComponent = Mappers.transform.get(entity);
         DraggableComponent draggableComponent = Mappers.draggable.get(entity);
         PlantComponent plantComponent = Mappers.plantable.get(entity);
+        HealthComponent healthComponent = Mappers.health.get(entity);
         CanonComponent canonComponent = Mappers.canon.get(entity);
 
 
@@ -34,7 +36,7 @@ public class PlantingSystem extends IteratingSystem {
         }
 
         if (plantComponent.isPlanted) {
-            if (plantComponent.health <= 0) {
+            if (healthComponent.getHealth() <= 0) {
                 Mappers.tile.get(plantComponent.occupyingTile).isOccupied = false;
                 getEngine().removeEntity(entity);
             }

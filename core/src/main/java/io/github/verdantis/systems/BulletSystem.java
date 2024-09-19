@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.verdantis.components.BulletComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.FreezingComponent;
+import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.components.WindComponent;
@@ -38,7 +39,9 @@ public class BulletSystem extends IteratingSystem {
             // If hit enemy
             if (rect1.overlaps(rect2)) {
                 EnemyComponent enemyComponent = Mappers.enemy.get(enemy);
-                enemyComponent.health -= bulletComponent.damage;
+                HealthComponent enemyHealth = Mappers.health.get(enemy);
+
+                enemyHealth.setHealth(enemyHealth.getHealth() - bulletComponent.damage);
                 if (bulletComponent.bulletType == Element.FIRE) {
                     dealFireDamage(enemy);
                 } else if (bulletComponent.bulletType == Element.ICE) {
