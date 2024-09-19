@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
+import io.github.verdantis.UIManager;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.GameState;
@@ -22,9 +23,12 @@ import io.github.verdantis.utils.Utils;
 public class SeedSystem extends IteratingSystem {
 
     private final GameState gameState;
-    public SeedSystem(GameState gameState) {
+    private final UIManager uiManager;
+
+    public SeedSystem(GameState gameState, UIManager uiManager) {
         super(Family.all(SeedComponent.class).get());
         this.gameState = gameState;
+        this.uiManager = uiManager;
     }
 
     @Override
@@ -38,6 +42,10 @@ public class SeedSystem extends IteratingSystem {
 
         if (clickableComponent.clicked) {
             clickableComponent.clicked = false;
+            if (uiManager.getSoulAmount() < seedComponent.soulCost) {
+                return;
+            }
+            uiManager.changeSoulAmount(-seedComponent.soulCost);
 
             TextureComponent textureComponent = Mappers.texture.get(entity);
             TransformComponent transformComponent = Mappers.transform.get(entity);
@@ -51,6 +59,7 @@ public class SeedSystem extends IteratingSystem {
             seedEntity.add(draggableComponent);
 
             PlantComponent plantComponent = new PlantComponent();
+            plantComponent.soulCost = seedComponent.soulCost;
             seedEntity.add(plantComponent);
 
             CanonComponent canonComponent = new CanonComponent();

@@ -65,20 +65,20 @@ public class GameScreen extends ScreenAdapter {
         RenderingSystem renderingSystem = new RenderingSystem();
         InputSystem inputSystem = new InputSystem(renderingSystem.getCamera());
         Gdx.input.setInputProcessor(inputSystem);
+        UIManager uiManager = new UIManager(atlas, 2);
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
-        SeedSystem seedSystem = new SeedSystem(gameState);
+        SeedSystem seedSystem = new SeedSystem(gameState, uiManager);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
-        PlantingSystem plantingSystem = new PlantingSystem();
+        PlantingSystem plantingSystem = new PlantingSystem(uiManager);
         ShootingSystem shootingSystem = new ShootingSystem(atlas);
         MovementSystem movementSystem = new MovementSystem();
         BulletSystem bulletSystem = new BulletSystem();
         EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(atlas);
-        EnemySystem enemySystem = new EnemySystem();
+        EnemySystem enemySystem = new EnemySystem(uiManager);
         // Element systems
         FireDamageSystem fireDamageSystem = new FireDamageSystem();
         FreezingSystem freezingSystem = new FreezingSystem();
         WindSystem windSystem = new WindSystem();
-
 
         engine.addSystem(renderingSystem);
         engine.addSystem(inputSystem);
@@ -94,6 +94,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(fireDamageSystem);
         engine.addSystem(freezingSystem);
         engine.addSystem(windSystem);
+        engine.addSystem(uiManager);
     }
 
     private void createTree() {

@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 
+import io.github.verdantis.UIManager;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.PlantComponent;
@@ -13,8 +14,11 @@ import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.utils.Mappers;
 
 public class PlantingSystem extends IteratingSystem {
-    public PlantingSystem() {
+    private final UIManager uiManager;
+
+    public PlantingSystem(UIManager uiManager) {
         super(Family.all(PlantComponent.class).get());
+        this.uiManager = uiManager;
     }
 
     @Override
@@ -62,6 +66,7 @@ public class PlantingSystem extends IteratingSystem {
 
         // no tile found, remove the plant
         if (!plantComponent.isPlanted) {
+            uiManager.changeSoulAmount(plantComponent.soulCost);
             getEngine().removeEntity(entity);
         }
     }

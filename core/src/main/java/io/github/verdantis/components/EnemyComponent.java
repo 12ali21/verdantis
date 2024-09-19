@@ -9,6 +9,7 @@ public class EnemyComponent implements Component {
     public float damage = 1f;
     public float damageCooldown = 1f;
     public float damageTimer = 1f;
+    public int soulAmount = 1;
 
     public enum State {
         WALKING, DAMAGING

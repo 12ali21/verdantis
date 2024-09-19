@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 
+import io.github.verdantis.UIManager;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.TransformComponent;
@@ -13,8 +14,11 @@ import io.github.verdantis.utils.Mappers;
 
 public class EnemySystem extends IteratingSystem {
 
-    public EnemySystem() {
+    private final UIManager uiManager;
+
+    public EnemySystem(UIManager uiManager) {
         super(Family.all(EnemyComponent.class).get());
+        this.uiManager = uiManager;
     }
 
     @Override
@@ -54,7 +58,9 @@ public class EnemySystem extends IteratingSystem {
             enemyVelocity.velocity.set(0, -enemy.maxSpeed);
         }
 
+        // Enemy death
         if (enemy.health <= 0) {
+            uiManager.changeSoulAmount(enemy.soulAmount);
             getEngine().removeEntity(entity);
         }
     }
