@@ -14,6 +14,7 @@ import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.components.VelocityComponent;
+import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Mappers;
 import io.github.verdantis.utils.Utils;
 
@@ -63,7 +64,7 @@ public class ShootingSystem extends IteratingSystem {
         }
     }
 
-    private TextureRegion getBulletTexture(CanonComponent.BulletType bulletType) {
+    private TextureRegion getBulletTexture(Element bulletType) {
         switch (bulletType) {
             case EARTH:
                 return atlas.findRegion("dirt_bullet");
