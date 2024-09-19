@@ -44,6 +44,15 @@ public class GameScreen extends ScreenAdapter {
         gameState = new GameState();
 
         engine = new Engine();
+        initializeSystems();
+
+        createTree();
+        createTiles();
+        createSeedTray();
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
+    private void initializeSystems() {
         RenderingSystem renderingSystem = new RenderingSystem();
         InputSystem inputSystem = new InputSystem(renderingSystem.getCamera());
         Gdx.input.setInputProcessor(inputSystem);
@@ -69,23 +78,30 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(bulletSystem);
         engine.addSystem(enemyManagerSystem);
         engine.addSystem(enemySystem);
+    }
 
-        createTiles();
-        createSeedTray();
-        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    private void createTree() {
+        float width = Constants.WORLD_WIDTH * 1.3f;
+        float height = width / 2f;
+
+        Entity treeEntity = Utils.createEntityCenter(engine, atlas.findRegion("tree"),
+                Constants.WORLD_WIDTH / 2f + 0.3f, 0.2f, width, height, 0
+        );
+        engine.addEntity(treeEntity);
     }
 
     private void createTiles() {
         TextureRegion tile_region = atlas.findRegion("tile_border");
 
 
-        createBackgrounds(Constants.GREEN_LENGTH, Constants.PADDING_BOTTOM);
+        createBackgrounds();
 
         for (int i = 0; i < Constants.NUM_LINES; i++) {
             for (int j = 0; j < Constants.LINE_LENGTH; j++) {
-                Entity tileEntity = Utils.createEntity(engine, tile_region, Constants.PADDING_LEFT + i,
-                        Constants.PADDING_BOTTOM + j, 0
-                );
+                Entity tileEntity =
+                        Utils.createEntity(engine, tile_region, Constants.PADDING_LEFT + i,
+                                Constants.PADDING_BOTTOM + j, -1
+                        );
                 TileComponent tileComponent = new TileComponent();
                 if (j >= Constants.GREEN_LENGTH) {
                     tileComponent.isOccupied = true;
@@ -97,24 +113,18 @@ public class GameScreen extends ScreenAdapter {
 
     }
 
-    private void createBackgrounds(int greenLength, float bottomPad) {
+    private void createBackgrounds() {
         TextureRegion gray_bg = atlas.findRegion("gray_bg");
         TextureRegion green_bg = atlas.findRegion("green_bg");
 
-        Entity entity = Utils.createEntity(engine, gray_bg, 0,
-                0, -2
-        );
-        entity.getComponent(TransformComponent.class).setSize(Constants.WORLD_WIDTH,
-                Constants.WORLD_HEIGHT
-        );
+        Entity entity = Utils.createEntity(engine, gray_bg, 0, 0, -2);
+        entity.getComponent(TransformComponent.class)
+                .setSize(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
         engine.addEntity(entity);
 
-        entity = Utils.createEntity(engine, green_bg, 0,
-                0, -1
-        );
-        entity.getComponent(TransformComponent.class).setSize(Constants.WORLD_WIDTH,
-                greenLength + bottomPad
-        );
+        entity = Utils.createEntity(engine, green_bg, 0, 0, -2);
+        entity.getComponent(TransformComponent.class)
+                .setSize(Constants.WORLD_WIDTH, Constants.GREEN_LENGTH + Constants.PADDING_BOTTOM);
         engine.addEntity(entity);
 
 
@@ -130,10 +140,15 @@ public class GameScreen extends ScreenAdapter {
         float middleX = Constants.WORLD_WIDTH / 2f;
         float middleY = .7f;
 
-        Entity entity = Utils.createEntityCenter(engine, bg_region, middleX, middleY, bg_scale, bg_scale, 1);
+        Entity entity =
+                Utils.createEntityCenter(engine, bg_region, middleX, middleY, bg_scale, bg_scale,
+                        6
+                );
         engine.addEntity(entity);
 
-        entity = Utils.createEntityCenter(engine, plant_region, middleX, middleY, plant_scale, plant_scale, 2);
+        entity = Utils.createEntityCenter(engine, plant_region, middleX, middleY, plant_scale,
+                plant_scale, 7
+        );
         ClickableComponent clickableComponent = new ClickableComponent();
         clickableComponent.containerScale = bg_scale / plant_scale;
         entity.add(clickableComponent);
