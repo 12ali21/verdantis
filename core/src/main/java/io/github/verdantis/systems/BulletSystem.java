@@ -5,12 +5,15 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 
 import io.github.verdantis.components.BulletComponent;
 import io.github.verdantis.components.EnemyComponent;
+import io.github.verdantis.components.FreezingComponent;
 import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.components.WindComponent;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Mappers;
@@ -38,8 +41,11 @@ public class BulletSystem extends IteratingSystem {
                 enemyComponent.health -= bulletComponent.damage;
                 if (bulletComponent.bulletType == Element.FIRE) {
                     dealFireDamage(enemy);
+                } else if (bulletComponent.bulletType == Element.ICE) {
+                    dealIceDamage(enemy);
+                } else if (bulletComponent.bulletType == Element.AIR) {
+                    applyWindEffect(transformComponent.getCenter());
                 }
-
 
                 getEngine().removeEntity(entity);
                 return;
@@ -52,7 +58,7 @@ public class BulletSystem extends IteratingSystem {
         }
     }
 
-    private static void dealFireDamage(Entity enemy) {
+    private void dealFireDamage(Entity enemy) {
         int fireTicks = 4;
         OnFireComponent onFireComponent = Mappers.onFire.get(enemy);
         if (onFireComponent == null) {
@@ -61,6 +67,42 @@ public class BulletSystem extends IteratingSystem {
             enemy.add(onFireComponent);
         } else {
             onFireComponent.ticks = fireTicks;
+        }
+    }
+
+    private void dealIceDamage(Entity enemy) {
+        FreezingComponent freezing = Mappers.freezing.get(enemy);
+        if (freezing == null) {
+            freezing = new FreezingComponent();
+            enemy.add(freezing);
+        } else {
+            freezing.freezeTimer = 0f;
+        }
+    }
+
+    private void applyWindEffect(Vector2 contactPos) {
+        float windDistance = 1f;
+        ImmutableArray<Entity> enemies =
+                getEngine().getEntitiesFor(Family.all(EnemyComponent.class).get());
+        Rectangle effectRect = new Rectangle(contactPos.x, contactPos.y, 0.1f, windDistance);
+
+        for (Entity enemy : enemies) {
+            TransformComponent enemyTransform = Mappers.transform.get(enemy);
+            Rectangle rect1 = enemyTransform.getRect();
+
+            if (rect1.overlaps(effectRect)) {
+                dealWindDamage(enemy);
+            }
+        }
+    }
+
+    private void dealWindDamage(Entity entity) {
+        WindComponent wind = Mappers.wind.get(entity);
+        if (wind == null) {
+            wind = new WindComponent();
+            entity.add(wind);
+        } else {
+            wind.windTimer = 0f;
         }
     }
 }

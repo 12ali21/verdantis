@@ -8,7 +8,7 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.TransformComponent;
-import io.github.verdantis.components.VelocityComponent;
+import io.github.verdantis.components.MovementComponent;
 import io.github.verdantis.utils.Mappers;
 
 public class EnemySystem extends IteratingSystem {
@@ -21,7 +21,7 @@ public class EnemySystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         EnemyComponent enemy = Mappers.enemy.get(entity);
         TransformComponent enemyTransform = Mappers.transform.get(entity);
-        VelocityComponent enemyVelocity = Mappers.velocity.get(entity);
+        MovementComponent enemyVelocity = Mappers.movement.get(entity);
 
 
         if (enemy.state == EnemyComponent.State.DAMAGING) {

@@ -12,6 +12,7 @@ import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Mappers;
 import io.github.verdantis.utils.Utils;
 
@@ -43,7 +44,7 @@ public class SeedSystem extends IteratingSystem {
 
             Entity seedEntity = Utils.createEntity(getEngine(), textureComponent.region,
                     transformComponent.position.x, transformComponent.position.y,
-                    seedComponent.plantWidth, seedComponent.plantHeight, transformComponent.z
+                    seedComponent.plantWidth, seedComponent.plantHeight, DrawingPriorities.PLANTS
             );
             DraggableComponent draggableComponent = new DraggableComponent();
             draggableComponent.isDragging = true;

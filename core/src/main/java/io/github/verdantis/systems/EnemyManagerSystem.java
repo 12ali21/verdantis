@@ -8,8 +8,9 @@ import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.verdantis.components.EnemyComponent;
-import io.github.verdantis.components.VelocityComponent;
+import io.github.verdantis.components.MovementComponent;
 import io.github.verdantis.utils.Constants;
+import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Utils;
 
 public class EnemyManagerSystem extends EntitySystem {
@@ -43,16 +44,17 @@ public class EnemyManagerSystem extends EntitySystem {
 
 
         Entity enemy = Utils.createEntityCenter(getEngine(), getEnemyRegion(enemyType), x, y, ENEMY_SIZE,
-                ENEMY_SIZE, 3
+                ENEMY_SIZE, DrawingPriorities.ENEMIES
         );
         EnemyComponent enemyComponent = new EnemyComponent();
         enemyComponent.health = 10f;
         enemyComponent.maxSpeed = 0.5f;
         enemy.add(enemyComponent);
 
-        VelocityComponent velocityComponent = new VelocityComponent();
-        velocityComponent.velocity.set(0, -enemyComponent.maxSpeed);
-        enemy.add(velocityComponent);
+        MovementComponent movementComponent = new MovementComponent();
+        movementComponent.maxSpeed = enemyComponent.maxSpeed;
+        movementComponent.acceleration.set(0, -0.5f);
+        enemy.add(movementComponent);
 
 
         getEngine().addEntity(enemy);

@@ -1,6 +1,5 @@
 package io.github.verdantis.utils;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
 
 import io.github.verdantis.components.BulletComponent;
@@ -8,13 +7,15 @@ import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.EnemyComponent;
+import io.github.verdantis.components.FreezingComponent;
 import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
-import io.github.verdantis.components.VelocityComponent;
+import io.github.verdantis.components.MovementComponent;
+import io.github.verdantis.components.WindComponent;
 
 public class Mappers {
     public static final ComponentMapper<TextureComponent> texture =
@@ -38,8 +39,8 @@ public class Mappers {
     public static final ComponentMapper<CanonComponent> canon = ComponentMapper.getFor(
             CanonComponent.class);
 
-    public static final ComponentMapper<VelocityComponent> velocity = ComponentMapper.getFor(
-            VelocityComponent.class);
+    public static final ComponentMapper<MovementComponent> movement = ComponentMapper.getFor(
+            MovementComponent.class);
 
     public static final ComponentMapper<EnemyComponent> enemy = ComponentMapper.getFor(
             EnemyComponent.class);
@@ -49,9 +50,15 @@ public class Mappers {
 
 
     public static final ComponentMapper<PlantComponent> plant = ComponentMapper.getFor(
-            PlantComponent.class);;
+            PlantComponent.class);
 
 
     public static final ComponentMapper<OnFireComponent> onFire = ComponentMapper.getFor(
-            OnFireComponent.class);;
+            OnFireComponent.class);
+
+    public static final ComponentMapper<FreezingComponent> freezing = ComponentMapper.getFor(
+            FreezingComponent.class);
+
+    public static final ComponentMapper<WindComponent> wind = ComponentMapper.getFor(
+            WindComponent.class);
 }

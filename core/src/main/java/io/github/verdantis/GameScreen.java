@@ -7,9 +7,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.RandomXS128;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.Random;
 
@@ -24,13 +22,16 @@ import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.EnemyManagerSystem;
 import io.github.verdantis.systems.EnemySystem;
 import io.github.verdantis.systems.FireDamageSystem;
+import io.github.verdantis.systems.FreezingSystem;
 import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.PlantingSystem;
 import io.github.verdantis.systems.RenderingSystem;
 import io.github.verdantis.systems.SeedSystem;
 import io.github.verdantis.systems.ShootingSystem;
-import io.github.verdantis.systems.VelocitySystem;
+import io.github.verdantis.systems.MovementSystem;
+import io.github.verdantis.systems.WindSystem;
 import io.github.verdantis.utils.Constants;
+import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Utils;
 
@@ -69,11 +70,14 @@ public class GameScreen extends ScreenAdapter {
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
         PlantingSystem plantingSystem = new PlantingSystem();
         ShootingSystem shootingSystem = new ShootingSystem(atlas);
-        VelocitySystem velocitySystem = new VelocitySystem();
+        MovementSystem movementSystem = new MovementSystem();
         BulletSystem bulletSystem = new BulletSystem();
         EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(atlas);
         EnemySystem enemySystem = new EnemySystem();
+        // Element systems
         FireDamageSystem fireDamageSystem = new FireDamageSystem();
+        FreezingSystem freezingSystem = new FreezingSystem();
+        WindSystem windSystem = new WindSystem();
 
 
         engine.addSystem(renderingSystem);
@@ -83,11 +87,13 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(draggingSystem);
         engine.addSystem(plantingSystem);
         engine.addSystem(shootingSystem);
-        engine.addSystem(velocitySystem);
+        engine.addSystem(movementSystem);
         engine.addSystem(bulletSystem);
         engine.addSystem(enemyManagerSystem);
         engine.addSystem(enemySystem);
         engine.addSystem(fireDamageSystem);
+        engine.addSystem(freezingSystem);
+        engine.addSystem(windSystem);
     }
 
     private void createTree() {
@@ -95,7 +101,7 @@ public class GameScreen extends ScreenAdapter {
         float height = width / 2f;
 
         Entity treeEntity = Utils.createEntityCenter(engine, atlas.findRegion("tree"),
-                Constants.WORLD_WIDTH / 2f + 0.3f, 0.2f, width, height, 0
+                Constants.WORLD_WIDTH / 2f + 0.3f, 0.2f, width, height, DrawingPriorities.TREE
         );
         engine.addEntity(treeEntity);
     }
@@ -165,7 +171,7 @@ public class GameScreen extends ScreenAdapter {
 
                 Entity tileEntity =
                         Utils.createEntity(engine, thisRegion, Constants.PADDING_LEFT + i,
-                                Constants.PADDING_BOTTOM + j, -1
+                                Constants.PADDING_BOTTOM + j, DrawingPriorities.TILES
                         );
                 TileComponent tileComponent = new TileComponent();
                 tileComponent.element = thisElement;
@@ -182,12 +188,12 @@ public class GameScreen extends ScreenAdapter {
         TextureRegion gray_bg = atlas.findRegion("gray_bg");
         TextureRegion green_bg = atlas.findRegion("green_bg");
 
-        Entity entity = Utils.createEntity(engine, gray_bg, 0, 0, -2);
+        Entity entity = Utils.createEntity(engine, gray_bg, 0, 0, DrawingPriorities.BACKGROUND);
         entity.getComponent(TransformComponent.class)
                 .setSize(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
         engine.addEntity(entity);
 
-        entity = Utils.createEntity(engine, green_bg, 0, 0, -2);
+        entity = Utils.createEntity(engine, green_bg, 0, 0, DrawingPriorities.BACKGROUND);
         entity.getComponent(TransformComponent.class)
                 .setSize(Constants.WORLD_WIDTH, Constants.GREEN_LENGTH + Constants.PADDING_BOTTOM);
         engine.addEntity(entity);
@@ -207,12 +213,12 @@ public class GameScreen extends ScreenAdapter {
 
         Entity entity =
                 Utils.createEntityCenter(engine, bg_region, middleX, middleY, bg_scale, bg_scale,
-                        6
+                        DrawingPriorities.SEED_TRAY
                 );
         engine.addEntity(entity);
 
         entity = Utils.createEntityCenter(engine, plant_region, middleX, middleY, plant_scale,
-                plant_scale, 7
+                plant_scale, DrawingPriorities.SEED_TRAY + 1
         );
         ClickableComponent clickableComponent = new ClickableComponent();
         clickableComponent.containerScale = bg_scale / plant_scale;

@@ -12,7 +12,8 @@ import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
-import io.github.verdantis.components.VelocityComponent;
+import io.github.verdantis.components.MovementComponent;
+import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Mappers;
 import io.github.verdantis.utils.Utils;
@@ -50,7 +51,7 @@ public class ShootingSystem extends IteratingSystem {
                     Utils.createEntityCenter(getEngine(), getBulletTexture(canon.element),
                             canonCenter.x, canonCenter.y,
                             BULLET_SIZE, BULLET_SIZE,
-                            transformComponent.z + 1
+                            DrawingPriorities.BULLETS
                     );
             // Add bullet component
             BulletComponent bulletComponent = new BulletComponent();
@@ -59,9 +60,11 @@ public class ShootingSystem extends IteratingSystem {
             bulletEntity.add(bulletComponent);
 
             // Add velocity component
-            VelocityComponent velocityComponent = new VelocityComponent();
-            velocityComponent.velocity.set(0, canon.bulletSpeed);
-            bulletEntity.add(velocityComponent);
+            MovementComponent movementComponent = new MovementComponent();
+            movementComponent.maxSpeed = canon.bulletSpeed;
+            movementComponent.acceleration.set(0, 10f);
+
+            bulletEntity.add(movementComponent);
 
             getEngine().addEntity(bulletEntity);
         }
