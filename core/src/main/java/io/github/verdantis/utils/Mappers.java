@@ -8,6 +8,7 @@ import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.EnemyComponent;
+import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TextureComponent;
@@ -49,4 +50,8 @@ public class Mappers {
 
     public static final ComponentMapper<PlantComponent> plant = ComponentMapper.getFor(
             PlantComponent.class);;
+
+
+    public static final ComponentMapper<OnFireComponent> onFire = ComponentMapper.getFor(
+            OnFireComponent.class);;
 }

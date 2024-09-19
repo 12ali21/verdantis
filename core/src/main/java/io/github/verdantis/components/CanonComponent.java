@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.verdantis.utils.Element;
 
 public class CanonComponent implements Component {
-    public Element bulletType = Element.EARTH;
+    public Element element = Element.EARTH;
     public float bulletSpeed = 1f;
     public float bulletDamage = 1f;
     public float bulletCooldown = 1f;

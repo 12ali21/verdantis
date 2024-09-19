@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 
+import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.TileComponent;
@@ -21,10 +22,11 @@ public class PlantingSystem extends IteratingSystem {
         TransformComponent transformComponent = Mappers.transform.get(entity);
         DraggableComponent draggableComponent = Mappers.draggable.get(entity);
         PlantComponent plantComponent = Mappers.plantable.get(entity);
+        CanonComponent canonComponent = Mappers.canon.get(entity);
 
 
         if (!draggableComponent.isDragging && !plantComponent.isPlanted) {
-            plant(entity, transformComponent, plantComponent);
+            plant(entity, transformComponent, plantComponent, canonComponent);
         }
 
         if (plantComponent.isPlanted) {
@@ -36,7 +38,8 @@ public class PlantingSystem extends IteratingSystem {
     }
 
     private void plant(Entity entity, TransformComponent transformComponent,
-            PlantComponent plantComponent
+            PlantComponent plantComponent,
+            CanonComponent canonComponent
     ) {
         ImmutableArray<Entity> tilesArray =
                 getEngine().getEntitiesFor(Family.all(TileComponent.class).get());
@@ -51,6 +54,8 @@ public class PlantingSystem extends IteratingSystem {
                 plantComponent.occupyingTile = tile;
                 plantComponent.isPlanted = true;
                 tileComponent.isOccupied = true;
+
+                canonComponent.element = tileComponent.element;
                 break;
             }
         }

@@ -23,6 +23,7 @@ import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.EnemyManagerSystem;
 import io.github.verdantis.systems.EnemySystem;
+import io.github.verdantis.systems.FireDamageSystem;
 import io.github.verdantis.systems.InputSystem;
 import io.github.verdantis.systems.PlantingSystem;
 import io.github.verdantis.systems.RenderingSystem;
@@ -72,6 +73,7 @@ public class GameScreen extends ScreenAdapter {
         BulletSystem bulletSystem = new BulletSystem();
         EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(atlas);
         EnemySystem enemySystem = new EnemySystem();
+        FireDamageSystem fireDamageSystem = new FireDamageSystem();
 
 
         engine.addSystem(renderingSystem);
@@ -85,6 +87,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(bulletSystem);
         engine.addSystem(enemyManagerSystem);
         engine.addSystem(enemySystem);
+        engine.addSystem(fireDamageSystem);
     }
 
     private void createTree() {
@@ -159,7 +162,6 @@ public class GameScreen extends ScreenAdapter {
                     thisElement = Element.EARTH;
                     thisRegion = normalTile;
                 }
-
 
                 Entity tileEntity =
                         Utils.createEntity(engine, thisRegion, Constants.PADDING_LEFT + i,
