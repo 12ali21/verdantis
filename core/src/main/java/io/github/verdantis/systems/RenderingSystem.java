@@ -19,8 +19,9 @@ import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.Mappers;
+import io.github.verdantis.utils.UpdatesWhenPaused;
 
-public class RenderingSystem extends SortedIteratingSystem {
+public class RenderingSystem extends SortedIteratingSystem implements UpdatesWhenPaused {
     public static final int PPM = 256; // Pixel per meters
     private final Camera camera;
     private final Viewport viewport;
@@ -70,5 +71,10 @@ public class RenderingSystem extends SortedIteratingSystem {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    @Override
+    public void onPauseChange(boolean paused) {
+        // nothing
     }
 }

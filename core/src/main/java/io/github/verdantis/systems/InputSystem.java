@@ -1,25 +1,38 @@
 package io.github.verdantis.systems;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import io.github.verdantis.utils.UpdatesWhenPaused;
+
 public class InputSystem extends EntitySystem implements InputProcessor {
+    private final Engine engine;
     private final Camera camera;
     private boolean isClicked = false;
     private Vector2 tmp2 = new Vector2();
     private final Vector2 clickedPositionWorld = new Vector2();
     private Vector3 tmp3 = new Vector3();
-
-    public InputSystem(Camera camera) {
+    private boolean isPaused;
+    public InputSystem(Engine engine, Camera camera) {
+        this.engine = engine;
         this.camera = camera;
+        Gdx.input.setCatchKey(Input.Keys.BACK, true);
     }
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK) {
+            isPaused = !isPaused;
+            changePause(isPaused);
+            return true;
+        }
         return false;
     }
 
@@ -66,6 +79,17 @@ public class InputSystem extends EntitySystem implements InputProcessor {
         return false;
     }
 
+
+    private void changePause(boolean paused) {
+        ImmutableArray<EntitySystem> systems = engine.getSystems();
+        for (EntitySystem system : systems) {
+            if (system instanceof UpdatesWhenPaused) {
+                ((UpdatesWhenPaused) system).onPauseChange(paused);
+            } else {
+                system.setProcessing(!paused);
+            }
+        }
+    }
 
     public Vector2 getClickedPositionInWorld() {
         tmp3.set(tmp2.x, tmp2.y, 0);

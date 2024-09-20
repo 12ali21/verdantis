@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
-import io.github.verdantis.UIManager;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.GameState;

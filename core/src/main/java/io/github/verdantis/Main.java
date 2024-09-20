@@ -17,7 +17,10 @@ public class Main extends ApplicationAdapter {
     public void create() {
         assets = new AssetManager();
         loadAssets();
-        currentScreen = new GameScreen(assets);
+        currentScreen = new MenuScreen(() -> {
+            currentScreen = new GameScreen(assets);
+            currentScreen.show();
+        });
     }
 
     private void loadAssets() {

@@ -4,12 +4,12 @@ import static io.github.verdantis.systems.RenderingSystem.PPM;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -42,10 +42,12 @@ import io.github.verdantis.systems.RootsSystem;
 import io.github.verdantis.systems.SeedSystem;
 import io.github.verdantis.systems.ShootingSystem;
 import io.github.verdantis.systems.MovementSystem;
+import io.github.verdantis.systems.UIManager;
 import io.github.verdantis.systems.WindSystem;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Element;
+import io.github.verdantis.utils.UpdatesWhenPaused;
 import io.github.verdantis.utils.Utils;
 
 public class GameScreen extends ScreenAdapter {
@@ -77,7 +79,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void initializeSystems() {
         RenderingSystem renderingSystem = new RenderingSystem();
-        InputSystem inputSystem = new InputSystem(renderingSystem.getCamera());
+        InputSystem inputSystem = new InputSystem(engine, renderingSystem.getCamera());
         Gdx.input.setInputProcessor(inputSystem);
         UIManager uiManager = new UIManager(atlas, 2);
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
@@ -130,7 +132,8 @@ public class GameScreen extends ScreenAdapter {
 
         for (int i = 0; i < Constants.NUM_LINES; i++) {
             Entity rootsEntity = Utils.createEntity(engine, rootsRegion,
-                    Constants.PADDING_LEFT + i, 1.7f - height, width, height, DrawingPriorities.ROOTS
+                    Constants.PADDING_LEFT + i, 1.7f - height, width, height,
+                    DrawingPriorities.ROOTS
             );
 
             HealthComponent healthComponent = new HealthComponent();

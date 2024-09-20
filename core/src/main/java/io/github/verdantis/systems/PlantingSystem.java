@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 
-import io.github.verdantis.UIManager;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.HealthComponent;
