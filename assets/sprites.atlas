@@ -27,6 +27,8 @@ ice_tile
 bounds:2,616,256,256
 normal_tile
 bounds:1286,1646,256,256
+particle
+bounds:1028,1514,32,32
 red_slime
 bounds:260,100,256,256
 root_end

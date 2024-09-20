@@ -28,6 +28,7 @@ import io.github.verdantis.components.RootComponent;
 import io.github.verdantis.components.SeedComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.systems.AnimationSystem;
 import io.github.verdantis.systems.BulletSystem;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
@@ -44,6 +45,7 @@ import io.github.verdantis.systems.ShootingSystem;
 import io.github.verdantis.systems.MovementSystem;
 import io.github.verdantis.systems.UIManager;
 import io.github.verdantis.systems.WindSystem;
+import io.github.verdantis.utils.AnimationFactory;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Element;
@@ -52,19 +54,17 @@ import io.github.verdantis.utils.Utils;
 
 public class GameScreen extends ScreenAdapter {
     private Engine engine;
-    private final AssetManager assets;
-    private TextureAtlas atlas;
+    private final Assets assets;
     private GameState gameState;
     private final Random random = new RandomXS128();
 
 
-    public GameScreen(AssetManager assets) {
+    public GameScreen(Assets assets) {
         this.assets = assets;
     }
 
     @Override
     public void show() {
-        atlas = new TextureAtlas(Gdx.files.internal("sprites.atlas"));
         gameState = new GameState();
 
         engine = new Engine();
@@ -78,24 +78,27 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void initializeSystems() {
+        AnimationFactory animationFactory = new AnimationFactory(assets);
+
         RenderingSystem renderingSystem = new RenderingSystem();
         InputSystem inputSystem = new InputSystem(engine, renderingSystem.getCamera());
         Gdx.input.setInputProcessor(inputSystem);
-        UIManager uiManager = new UIManager(atlas, 2);
+        UIManager uiManager = new UIManager(assets, 2);
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
         SeedSystem seedSystem = new SeedSystem(gameState, uiManager);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
-        PlantingSystem plantingSystem = new PlantingSystem(uiManager);
-        ShootingSystem shootingSystem = new ShootingSystem(atlas);
+        PlantingSystem plantingSystem = new PlantingSystem(uiManager, animationFactory);
+        ShootingSystem shootingSystem = new ShootingSystem(assets);
         MovementSystem movementSystem = new MovementSystem();
         BulletSystem bulletSystem = new BulletSystem();
-        EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(atlas);
+        EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(assets);
         EnemySystem enemySystem = new EnemySystem(uiManager);
         // Element systems
         FireDamageSystem fireDamageSystem = new FireDamageSystem();
         FreezingSystem freezingSystem = new FreezingSystem();
         WindSystem windSystem = new WindSystem();
         RootsSystem rootsSystem = new RootsSystem();
+        AnimationSystem animationSystem = new AnimationSystem();
 
         engine.addSystem(renderingSystem);
         engine.addSystem(inputSystem);
@@ -113,15 +116,18 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(windSystem);
         engine.addSystem(uiManager);
         engine.addSystem(rootsSystem);
+        engine.addSystem(animationSystem);
     }
 
     private void createTree() {
         float width = Constants.WORLD_WIDTH * 1.3f;
         float height = width / 2f;
 
-        Entity treeEntity = Utils.createEntityCenter(engine, atlas.findRegion("tree"),
-                Constants.WORLD_WIDTH / 2f + 0.3f, 0.2f, width, height, DrawingPriorities.TREE
-        );
+        Entity treeEntity =
+                Utils.createEntityCenter(engine, assets.spritesAtlas().findRegion(Assets.TREE),
+                        Constants.WORLD_WIDTH / 2f + 0.3f, 0.2f, width, height,
+                        DrawingPriorities.TREE
+                );
         engine.addEntity(treeEntity);
     }
 
@@ -149,8 +155,8 @@ public class GameScreen extends ScreenAdapter {
 
     // Create a long texture region made up of multiple root textures
     private TextureRegion getRootRegion() {
-        TextureRegion endRegion = atlas.findRegion("root_end");
-        TextureRegion middleRegion = atlas.findRegion("root_middle");
+        TextureRegion endRegion = assets.spritesAtlas().findRegion(Assets.ROOT_END);
+        TextureRegion middleRegion = assets.spritesAtlas().findRegion(Assets.ROOT_MIDDLE);
 
         // Set up a frame buffer to draw on
         FrameBuffer frameBuffer =
@@ -188,10 +194,10 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void createTiles(int numElements) {
-        TextureRegion normalTile = atlas.findRegion("normal_tile");
-        TextureRegion iceTile = atlas.findRegion("ice_tile");
-        TextureRegion fireTile = atlas.findRegion("fire_tile");
-        TextureRegion windTile = atlas.findRegion("wind_tile");
+        TextureRegion normalTile = assets.spritesAtlas().findRegion(Assets.NORMAL_TILE);
+        TextureRegion iceTile = assets.spritesAtlas().findRegion(Assets.ICE_TILE);
+        TextureRegion fireTile = assets.spritesAtlas().findRegion(Assets.FIRE_TILE);
+        TextureRegion windTile = assets.spritesAtlas().findRegion(Assets.WIND_TILE);
         if (numElements > Constants.NUM_LINES) {
             throw new IllegalArgumentException("Too many elements");
         }
@@ -266,8 +272,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void createBackgrounds() {
-        TextureRegion gray_bg = atlas.findRegion("gray_bg");
-        TextureRegion green_bg = atlas.findRegion("green_bg");
+        TextureRegion gray_bg = assets.spritesAtlas().findRegion(Assets.GRAY_BG);
+        TextureRegion green_bg = assets.spritesAtlas().findRegion(Assets.GREEN_BG);
 
         Entity entity = Utils.createEntity(engine, gray_bg, 0, 0, DrawingPriorities.BACKGROUND);
         entity.getComponent(TransformComponent.class)
@@ -283,8 +289,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void createSeedTray() {
-        TextureRegion bg_region = atlas.findRegion("normal_tile");
-        TextureRegion plant_region = atlas.findRegion("green_plant");
+        TextureRegion bg_region = assets.spritesAtlas().findRegion(Assets.NORMAL_TILE);
+        TextureRegion plant_region = assets.spritesAtlas().findRegion(Assets.GREEN_PLANT);
         float bg_scale = 0.85f;
         float plant_scale = 0.6f;
 

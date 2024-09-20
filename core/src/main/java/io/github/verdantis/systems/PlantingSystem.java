@@ -5,20 +5,26 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 
+import io.github.verdantis.components.AnimationComponent;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.PlantComponent;
+import io.github.verdantis.components.StateComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.utils.AnimationFactory;
+import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Mappers;
 
 public class PlantingSystem extends IteratingSystem {
     private final UIManager uiManager;
+    private final AnimationFactory animationFactory;
 
-    public PlantingSystem(UIManager uiManager) {
+    public PlantingSystem(UIManager uiManager, AnimationFactory animationFactory) {
         super(Family.all(PlantComponent.class).get());
         this.uiManager = uiManager;
+        this.animationFactory = animationFactory;
     }
 
     @Override
@@ -61,6 +67,7 @@ public class PlantingSystem extends IteratingSystem {
                 tileComponent.isOccupied = true;
 
                 canonComponent.element = tileComponent.element;
+                addAnimations(entity, canonComponent.element);
                 break;
             }
         }
@@ -70,5 +77,19 @@ public class PlantingSystem extends IteratingSystem {
             uiManager.changeSoulAmount(plantComponent.soulCost);
             getEngine().removeEntity(entity);
         }
+    }
+
+    private void addAnimations(Entity entity, Element element) {
+        AnimationComponent animationComponent = new AnimationComponent();
+
+        animationComponent.animations.put(StateComponent.States.SHOOTING.ordinal(),
+                animationFactory.getShootingAnimation(element)
+        );
+
+        StateComponent stateComponent = new StateComponent();
+        stateComponent.currentState = StateComponent.States.SHOOTING;
+
+        entity.add(stateComponent);
+        entity.add(animationComponent);
     }
 }

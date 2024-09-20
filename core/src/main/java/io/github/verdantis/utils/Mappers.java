@@ -2,6 +2,7 @@ package io.github.verdantis.utils;
 
 import com.badlogic.ashley.core.ComponentMapper;
 
+import io.github.verdantis.components.AnimationComponent;
 import io.github.verdantis.components.BulletComponent;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
@@ -13,6 +14,7 @@ import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.RootComponent;
 import io.github.verdantis.components.SeedComponent;
+import io.github.verdantis.components.StateComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
@@ -69,4 +71,10 @@ public class Mappers {
 
     public static final ComponentMapper<RootComponent> roots = ComponentMapper.getFor(
             RootComponent.class);
+
+    public static final ComponentMapper<AnimationComponent> animation = ComponentMapper.getFor(
+            AnimationComponent.class);
+
+    public static final ComponentMapper<StateComponent> state = ComponentMapper.getFor(
+            StateComponent.class);
 }

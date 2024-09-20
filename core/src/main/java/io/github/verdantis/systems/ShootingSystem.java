@@ -7,9 +7,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import io.github.verdantis.Assets;
 import io.github.verdantis.components.BulletComponent;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.PlantComponent;
+import io.github.verdantis.components.StateComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.components.MovementComponent;
@@ -19,12 +21,12 @@ import io.github.verdantis.utils.Mappers;
 import io.github.verdantis.utils.Utils;
 
 public class ShootingSystem extends IteratingSystem {
-    private final TextureAtlas atlas;
+    private final Assets assets;
     private final static float BULLET_SIZE = 0.3f;
 
-    public ShootingSystem(TextureAtlas atlas) {
+    public ShootingSystem(Assets assets) {
         super(Family.all(CanonComponent.class).get());
-        this.atlas = atlas;
+        this.assets = assets;
     }
 
     @Override
@@ -41,9 +43,13 @@ public class ShootingSystem extends IteratingSystem {
         textureComponent.region = getCanonRegion(canon.element);
 
         // Shoot a bullet
-        canon.bulletTimer -= deltaTime;
-        if (canon.bulletTimer <= 0) {
-            canon.bulletTimer = canon.bulletCooldown;
+        canon.bulletTimer += deltaTime;
+        if (canon.bulletTimer >= canon.bulletCooldown) {
+            canon.bulletTimer = 0;
+            // reset animation
+            StateComponent stateComponent = Mappers.state.get(entity);
+            stateComponent.time = 0f;
+
             Vector2 canonCenter = transformComponent.getCenter();
             canonCenter.add(canon.bulletOffset);
             // Create a bullet entity
@@ -73,13 +79,13 @@ public class ShootingSystem extends IteratingSystem {
     private TextureRegion getBulletTexture(Element bulletType) {
         switch (bulletType) {
             case EARTH:
-                return atlas.findRegion("dirt_bullet");
+                return assets.spritesAtlas().findRegion(Assets.DIRT_BULLET);
             case FIRE:
-                return atlas.findRegion("fire_bullet");
+                return assets.spritesAtlas().findRegion(Assets.FIRE_BULLET);
             case ICE:
-                return atlas.findRegion("ice_bullet");
+                return assets.spritesAtlas().findRegion(Assets.ICE_BULLET);
             case AIR:
-                return atlas.findRegion("wind_bullet");
+                return assets.spritesAtlas().findRegion(Assets.WIND_BULLET);
             default:
                 return null;
         }
@@ -88,13 +94,13 @@ public class ShootingSystem extends IteratingSystem {
     private TextureRegion getCanonRegion(Element element) {
         switch (element) {
             case EARTH:
-                return atlas.findRegion("green_plant");
+                return assets.spritesAtlas().findRegion(Assets.GREEN_PLANT);
             case FIRE:
-                return atlas.findRegion("fire_plant");
+                return assets.spritesAtlas().findRegion(Assets.FIRE_PLANT);
             case ICE:
-                return atlas.findRegion("ice_plant");
+                return assets.spritesAtlas().findRegion(Assets.ICE_PLANT);
             case AIR:
-                return atlas.findRegion("air_plant");
+                return assets.spritesAtlas().findRegion(Assets.AIR_PLANT);
             default:
                 return null;
         }

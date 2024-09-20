@@ -10,21 +10,17 @@ import com.badlogic.gdx.utils.ScreenUtils;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
 
-    private AssetManager assets;
+    private Assets assets;
     private Screen currentScreen;
     private boolean assetsLoaded = false;
     @Override
     public void create() {
-        assets = new AssetManager();
-        loadAssets();
+        assets = new Assets();
+        assets.loadAssets();
         currentScreen = new MenuScreen(() -> {
             currentScreen = new GameScreen(assets);
             currentScreen.show();
         });
-    }
-
-    private void loadAssets() {
-        assets.load("sprites.png", Texture.class);
     }
 
     @Override

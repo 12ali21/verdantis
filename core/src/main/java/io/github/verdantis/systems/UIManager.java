@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import io.github.verdantis.Assets;
 import io.github.verdantis.utils.UpdatesWhenPaused;
 
 public class UIManager extends EntitySystem implements UpdatesWhenPaused {
@@ -31,7 +32,7 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
 
     private Skin skin;
 
-    public UIManager(TextureAtlas atlas, int initialSoulAmount) {
+    public UIManager(Assets assets, int initialSoulAmount) {
         // Set up stage and table layout
         float w = 1080;
         float h = w * 16f / 9;
@@ -47,7 +48,7 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
         pauseTable = initPauseTable();
 
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        soulIcon = new Image(atlas.findRegion("soul_orb"));
+        soulIcon = new Image(assets.spritesAtlas().findRegion(Assets.SOUL_ORB));
 
         soulAmount = initialSoulAmount;
         soulLabel = new Label("" + soulAmount, getLabelStyle(48, "cinzel_bold"));

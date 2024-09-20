@@ -2,11 +2,11 @@ package io.github.verdantis.systems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 
+import io.github.verdantis.Assets;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.MovementComponent;
@@ -16,7 +16,7 @@ import io.github.verdantis.utils.Utils;
 
 public class EnemyManagerSystem extends EntitySystem {
     private static final float ENEMY_SIZE = 0.7f;
-    private final TextureAtlas atlas;
+    private final Assets assets;
     private final static float ENEMY_SPAWN_TIME = 5f;
     private float timeSinceLastSpawn = 0f;
     private RandomXS128 random = new RandomXS128();
@@ -24,8 +24,8 @@ public class EnemyManagerSystem extends EntitySystem {
 
     private boolean debugSpawn = false;
 
-    public EnemyManagerSystem(TextureAtlas atlas) {
-        this.atlas = atlas;
+    public EnemyManagerSystem(Assets assets) {
+        this.assets = assets;
     }
 
     @Override
@@ -77,11 +77,11 @@ public class EnemyManagerSystem extends EntitySystem {
     private TextureRegion getEnemyRegion(EnemyType enemyType) {
         switch (enemyType) {
             case GREEN_SLIME:
-                return atlas.findRegion("green_slime");
+                return assets.spritesAtlas().findRegion(Assets.GREEN_SLIME);
             case YELLOW_SLIME:
-                return atlas.findRegion("yellow_slime");
+                return assets.spritesAtlas().findRegion(Assets.YELLOW_SLIME);
             case RED_SLIME:
-                return atlas.findRegion("red_slime");
+                return assets.spritesAtlas().findRegion(Assets.RED_SLIME);
             default:
                 return null;
         }

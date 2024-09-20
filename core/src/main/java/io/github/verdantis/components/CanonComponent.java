@@ -10,7 +10,7 @@ public class CanonComponent implements Component {
     public float bulletSpeed = 1f;
     public float bulletDamage = 1f;
     public float bulletCooldown = 1f;
-    public float bulletTimer = 1f;
+    public float bulletTimer = 0f;
 
     public Vector2 bulletOffset = new Vector2();
 }
