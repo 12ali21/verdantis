@@ -6,7 +6,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
-import io.github.verdantis.components.GameState;
+import io.github.verdantis.GameState;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.PlantComponent;
@@ -22,18 +22,18 @@ import io.github.verdantis.utils.Utils;
  */
 public class SeedSystem extends IteratingSystem {
 
-    private final GameState gameState;
     private final UIManager uiManager;
+    private final InputSystem inputSystem;
 
-    public SeedSystem(GameState gameState, UIManager uiManager) {
+    public SeedSystem(UIManager uiManager, InputSystem inputSystem) {
         super(Family.all(SeedComponent.class).get());
-        this.gameState = gameState;
         this.uiManager = uiManager;
+        this.inputSystem = inputSystem;
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if (gameState.getState() == GameState.State.PLANTING) {
+        if (inputSystem.getCurrentState() == InputSystem.InputState.DRAGGING) {
             return;
         }
 
@@ -73,7 +73,7 @@ public class SeedSystem extends IteratingSystem {
 
             getEngine().addEntity(seedEntity);
 
-            gameState.changeState(GameState.State.PLANTING);
+            inputSystem.setCurrentState(InputSystem.InputState.DEFAULT);
         }
     }
 }

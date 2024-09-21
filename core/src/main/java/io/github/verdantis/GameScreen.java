@@ -4,19 +4,12 @@ import static io.github.verdantis.systems.RenderingSystem.PPM;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntitySystem;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.RandomXS128;
@@ -25,7 +18,6 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import java.util.Random;
 
 import io.github.verdantis.components.ClickableComponent;
-import io.github.verdantis.components.GameState;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.RootComponent;
 import io.github.verdantis.components.SeedComponent;
@@ -52,7 +44,6 @@ import io.github.verdantis.utils.AnimationFactory;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Element;
-import io.github.verdantis.utils.UpdatesWhenPaused;
 import io.github.verdantis.utils.Utils;
 
 public class GameScreen extends ScreenAdapter {
@@ -60,6 +51,7 @@ public class GameScreen extends ScreenAdapter {
     private final Assets assets;
     private GameState gameState;
     private final Random random = new RandomXS128();
+    private UIManager uiManager;
 
 
     public GameScreen(Assets assets) {
@@ -69,37 +61,61 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void show() {
         gameState = new GameState();
+        gameState.registerCallback(this::handleGameStateChange);
 
         engine = new Engine();
+        startGame();
+    }
+
+    private void startGame() {
         initializeSystems();
 
         createTree();
-        createRoots();
+//        createRoots();
         createTiles(3);
         createSeedTray();
-        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         Music music = assets.manager.get(Assets.GAME_MUSIC, Music.class);
         music.setLooping(true);
         music.setVolume(0.5f);
         music.play();
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
+    private void handleGameStateChange(GameState.State state) {
+        switch (state) {
+            case RESTART:
+                engine.removeAllEntities();
+                engine.removeAllSystems();
+                startGame();
+                gameState.changeState(GameState.State.DEFAULT);
+                break;
+            case DEFEAT:
+            case VICTORY:
+                Music music = assets.manager.get(Assets.GAME_MUSIC, Music.class);
+                music.stop();
+                Gdx.input.setInputProcessor(uiManager.getStage());
+                break;
+            default:
+                break;
+        }
     }
 
     private void initializeSystems() {
         AnimationFactory animationFactory = new AnimationFactory(assets);
 
         RenderingSystem renderingSystem = new RenderingSystem();
-        InputSystem inputSystem = new InputSystem(engine, renderingSystem.getCamera());
+        InputSystem inputSystem = new InputSystem(engine, gameState, renderingSystem.getCamera());
         Gdx.input.setInputProcessor(inputSystem);
-        UIManager uiManager = new UIManager(assets, 2);
+        uiManager = new UIManager(assets, gameState, 2);
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
-        SeedSystem seedSystem = new SeedSystem(gameState, uiManager);
-        DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
+        SeedSystem seedSystem = new SeedSystem(uiManager, inputSystem);
+        DraggingSystem draggingSystem = new DraggingSystem(inputSystem);
         PlantingSystem plantingSystem = new PlantingSystem(uiManager, animationFactory, assets);
         ShootingSystem shootingSystem = new ShootingSystem(assets);
         MovementSystem movementSystem = new MovementSystem();
         BulletSystem bulletSystem = new BulletSystem(assets);
-        EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(assets);
+        EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(assets, gameState, EnemyManagerSystem.GameLevel.LEVEL_1);
         EnemySystem enemySystem = new EnemySystem(uiManager, assets);
         // Element systems
         FireDamageSystem fireDamageSystem = new FireDamageSystem();

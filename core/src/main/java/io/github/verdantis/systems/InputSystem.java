@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import io.github.verdantis.GameState;
 import io.github.verdantis.utils.UpdatesWhenPaused;
 
 public class InputSystem extends EntitySystem implements InputProcessor {
@@ -20,7 +21,15 @@ public class InputSystem extends EntitySystem implements InputProcessor {
     private final Vector2 clickedPositionWorld = new Vector2();
     private Vector3 tmp3 = new Vector3();
     private boolean isPaused;
-    public InputSystem(Engine engine, Camera camera) {
+
+    private InputState currentState = InputState.DEFAULT;
+    public InputSystem(Engine engine, GameState gameState, Camera camera) {
+        gameState.registerCallback((state) -> {
+            if (state == GameState.State.DEFEAT) {
+                changePause(true);
+            }
+        });
+
         this.engine = engine;
         this.camera = camera;
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
@@ -107,5 +116,17 @@ public class InputSystem extends EntitySystem implements InputProcessor {
 
     public boolean isMouseDown() {
         return isClicked;
+    }
+
+    public InputState getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(InputState currentState) {
+        this.currentState = currentState;
+    }
+
+    public enum InputState {
+        DEFAULT, DRAGGING
     }
 }
