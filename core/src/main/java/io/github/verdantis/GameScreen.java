@@ -4,7 +4,9 @@ import static io.github.verdantis.systems.RenderingSystem.PPM;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -53,13 +55,20 @@ import io.github.verdantis.utils.Utils;
 
 public class GameScreen extends ScreenAdapter {
     private Engine engine;
+    private final Game game;
     private final Assets assets;
     private GameState gameState;
     private final Random random = new RandomXS128();
     private UIManager uiManager;
+    private int currentLevelNum;
+    private Preferences prefs;
+    private Music music;
+
+    private boolean screenDestroyed = false;
 
 
-    public GameScreen(Assets assets) {
+    public GameScreen(Game game, Assets assets) {
+        this.game = game;
         this.assets = assets;
     }
 
@@ -69,6 +78,11 @@ public class GameScreen extends ScreenAdapter {
         gameState.registerCallback(this::handleGameStateChange);
 
         engine = new Engine();
+
+        // load current level number
+        prefs = Gdx.app.getPreferences(Constants.PREFS_NAME);
+        currentLevelNum = prefs.getInteger("level", 1);
+
         startGame();
     }
 
@@ -80,7 +94,7 @@ public class GameScreen extends ScreenAdapter {
         createTiles(3);
         createSeedTray();
 
-        Music music = assets.manager.get(Assets.GAME_MUSIC, Music.class);
+        music = assets.manager.get(Assets.GAME_MUSIC, Music.class);
         music.setLooping(true);
         music.setVolume(0.5f);
         music.play();
@@ -89,17 +103,48 @@ public class GameScreen extends ScreenAdapter {
 
     private void handleGameStateChange(GameState.State state) {
         switch (state) {
+            case DEFAULT:
+                if (!music.isPlaying() && !screenDestroyed) {
+                    music.play();
+                }
+                break;
+
+            case PAUSED:
+                music.pause();
+                break;
+
+            case DEFEAT:
+            case VICTORY:
+                music.stop();
+                break;
+
+            case NEXT_LEVEL:
+                currentLevelNum++;
+                if (currentLevelNum >= Constants.MAX_LEVEL) {
+                    prefs.putInteger("level", 1);
+                } else {
+                    prefs.putInteger("level", currentLevelNum);
+                }
+                prefs.flush();
             case RESTART:
                 engine.removeAllEntities();
                 engine.removeAllSystems();
                 startGame();
                 gameState.changeState(GameState.State.DEFAULT);
                 break;
-            case DEFEAT:
-            case VICTORY:
-                Music music = assets.manager.get(Assets.GAME_MUSIC, Music.class);
+
+            case MAIN_MENU:
+                if (currentLevelNum >= Constants.MAX_LEVEL) {
+                    prefs = Gdx.app.getPreferences(Constants.PREFS_NAME);
+                    prefs.putInteger("level", 1);
+                    prefs.flush();
+                }
+                engine.removeAllEntities();
+                engine.removeAllSystems();
                 music.stop();
-                Gdx.input.setInputProcessor(uiManager.getStage());
+                gameState.changeState(GameState.State.DEFAULT);
+                game.setScreen(new MenuScreen(game, assets));
+                screenDestroyed = true;
                 break;
             default:
                 break;
@@ -108,11 +153,10 @@ public class GameScreen extends ScreenAdapter {
 
     private void initializeSystems() {
         AnimationFactory animationFactory = new AnimationFactory(assets);
+        uiManager = new UIManager(assets, gameState, 10, currentLevelNum);
 
         RenderingSystem renderingSystem = new RenderingSystem();
-        InputSystem inputSystem = new InputSystem(engine, gameState, renderingSystem.getCamera());
-        Gdx.input.setInputProcessor(inputSystem);
-        uiManager = new UIManager(assets, gameState, 5);
+        InputSystem inputSystem = new InputSystem(engine, uiManager, gameState, renderingSystem.getCamera());
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
         SeedSystem seedSystem = new SeedSystem(uiManager, inputSystem);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem);
@@ -122,7 +166,7 @@ public class GameScreen extends ScreenAdapter {
         BulletSystem bulletSystem = new BulletSystem(assets);
         EnemyManagerSystem enemyManagerSystem =
                 new EnemyManagerSystem(assets, gameState, animationFactory,
-                        EnemyManagerSystem.GameLevel.LEVEL_1
+                        currentLevelNum
                 );
         EnemySystem enemySystem = new EnemySystem(uiManager, assets);
         // Element systems

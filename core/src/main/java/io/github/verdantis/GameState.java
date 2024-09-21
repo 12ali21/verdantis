@@ -46,9 +46,13 @@ public class GameState {
 
     public enum State {
         DEFAULT,
+        PAUSED,
+        RESUME,
         DEFEAT,
         VICTORY,
-        RESTART
+        RESTART,
+        NEXT_LEVEL,
+        MAIN_MENU
     }
 
     public interface StateChangeCallback {

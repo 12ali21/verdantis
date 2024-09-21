@@ -73,7 +73,7 @@ public class SeedSystem extends IteratingSystem {
 
             getEngine().addEntity(seedEntity);
 
-            inputSystem.setCurrentState(InputSystem.InputState.DEFAULT);
+            inputSystem.setCurrentState(InputSystem.InputState.DRAGGING);
         }
     }
 }

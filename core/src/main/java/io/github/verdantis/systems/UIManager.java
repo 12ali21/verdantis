@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import io.github.verdantis.Assets;
 import io.github.verdantis.GameState;
+import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.UpdatesWhenPaused;
 
 public class UIManager extends EntitySystem implements UpdatesWhenPaused {
@@ -30,15 +30,18 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
     private final Stack stack;
     private final GameState gameState;
     private final Stage stage;
-    private Table table;
+    private Table top;
     private Image soulIcon;
     private Label soulLabel;
     private int soulAmount;
 
     private Skin skin;
+    private int currentLevel;
 
-    public UIManager(Assets assets, GameState gameState, int initialSoulAmount) {
+    public UIManager(Assets assets, GameState gameState, int initialSoulAmount, int currentLevel) {
         this.gameState = gameState;
+        this.currentLevel = currentLevel;
+        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         // register victory and defeat listeners
         gameState.registerCallback(this::handleGameStateChange);
 
@@ -50,28 +53,27 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
         stack.setFillParent(true);
         stage.addActor(stack);
 
-        table = new Table();
-        table.setFillParent(true);
-        table.bottom().left();
-        stack.add(table);
+        top = new Table();
+        top.setFillParent(true);
+        top.bottom().left();
+        stack.add(top);
         pauseTable = initPauseTable();
 
-        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         soulIcon = new Image(assets.spritesAtlas().findRegion(Assets.SOUL_ORB));
 
         soulAmount = initialSoulAmount;
         soulLabel = new Label("" + soulAmount, getLabelStyle(48, "cinzel_bold"));
 
 
-        table.add(soulIcon).size(84, 84).padLeft(10).padTop(10);
-        table.add(soulLabel).padLeft(10).padTop(10);
+        top.add(soulIcon).size(84, 84).padLeft(10).padTop(10);
+        top.add(soulLabel).padLeft(10).padTop(10);
 
     }
 
     private void handleGameStateChange(GameState.State state) {
         switch (state) {
             case VICTORY:
-                showVictory();
+                showVictory(currentLevel >= Constants.MAX_LEVEL);
                 break;
             case DEFEAT:
                 showDefeat();
@@ -81,15 +83,15 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
         }
     }
 
-    private void showVictory() {
-        stack.add(initVictoryTable());
+    private void showVictory(boolean lastLevel) {
+        stack.add(initVictoryTable(lastLevel));
     }
 
     private void showDefeat() {
         stack.add(initDefeatTable());
     }
 
-    private Table initVictoryTable() {
+    private Table initVictoryTable(boolean lastLevel) {
         Table table = new Table();
         table.setBackground(getBackground(new Color(0.1f, 0.1f, 0.1f, 0.5f)));
         table.setFillParent(true);
@@ -97,7 +99,38 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
 
         Label label = new Label("Victory", getLabelStyle(72, "cinzel_bold"));
         label.setColor(Color.GREEN);
-        table.add(label);
+        table.add(label).row();
+
+        Label nextLevelLabel;
+        if (lastLevel) {
+            Label thankYouLabel =
+                    new Label("Thank you for playing!", getLabelStyle(36, "cinzel_bold"));
+            table.add(thankYouLabel).row();
+
+            Label victoryLabel =
+                    new Label("You have completed all levels!", getLabelStyle(36, "cinzel_bold"));
+            table.add(victoryLabel).row();
+
+            nextLevelLabel = new Label("Main Menu", getLabelStyle(36, "cinzel_bold"));
+        } else {
+            nextLevelLabel = new Label("Next Level", getLabelStyle(36, "cinzel_bold"));
+        }
+
+        Button nextLevelButton = new Button(skin);
+        nextLevelButton.add(nextLevelLabel);
+        table.add(nextLevelButton).fill().maxWidth(512).height(96).growX();
+
+        GameState.State nextState = GameState.State.NEXT_LEVEL;
+        if (lastLevel) {
+            nextState = GameState.State.MAIN_MENU;
+        }
+        GameState.State finalNextState = nextState;
+        nextLevelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                gameState.changeState(finalNextState);
+            }
+        });
 
         return table;
     }
@@ -133,8 +166,19 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
         pauseTable.center();
 
         Label pauseLabel = new Label("Paused", getLabelStyle(72, "cinzel_bold"));
-        pauseTable.add(pauseLabel);
+        pauseTable.add(pauseLabel).row();
 
+        Label mainMenuLabel = new Label("Main Menu", getLabelStyle(36, "cinzel_bold"));
+
+        Button mainMenuButton = new Button(skin);
+        mainMenuButton.add(mainMenuLabel);
+        pauseTable.add(mainMenuButton).fill().maxWidth(512).height(96).growX();
+        mainMenuButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                gameState.changeState(GameState.State.MAIN_MENU);
+            }
+        });
         return pauseTable;
     }
 

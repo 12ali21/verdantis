@@ -30,24 +30,31 @@ public class EnemyManagerSystem extends EntitySystem {
     private final Assets assets;
     private final GameState gameState;
     private final AnimationFactory animationFactory;
-    private final GameLevel level;
-    private final Array<Phase> level1Phases;
-    private RandomXS128 random = new RandomXS128();
-    private Vector2 tmp2 = new Vector2();
+    private final int level;
+    private Array<Phase> level1Phases;
+    private Array<Phase> level2Phases;
+    private Array<Phase> level3Phases;
+
+    private final RandomXS128 random = new RandomXS128();
 
     private boolean finishedLevel = false;
 
-    private boolean debugSpawn = false;
-
     public EnemyManagerSystem(Assets assets, GameState gameState, AnimationFactory animationFactory,
-            GameLevel level
+            int levelNum
     ) {
         this.assets = assets;
         this.gameState = gameState;
         this.animationFactory = animationFactory;
-        this.level = level;
+        this.level = levelNum;
 
+        initLevel1Phases();
+        initLevel2Phases();
+        initLevel3Phases();
+    }
+
+    private void initLevel1Phases() {
         level1Phases = new Array<>();
+
         level1Phases.add(new Phase(8f, EnemyType.GREEN_SLIME, 2));
         level1Phases.add(new Phase(10f, EnemyType.GREEN_SLIME, 0));
         level1Phases.add(new Phase(8f, EnemyType.GREEN_SLIME, 3));
@@ -65,26 +72,87 @@ public class EnemyManagerSystem extends EntitySystem {
         level1Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, -1));
     }
 
+
+    private void initLevel2Phases() {
+        level2Phases = new Array<>();
+
+        level2Phases.add(new Phase(8f, EnemyType.GREEN_SLIME, 3));
+        level2Phases.add(new Phase(8f, EnemyType.GREEN_SLIME, 1));
+        level2Phases.add(new Phase(6f, EnemyType.GREEN_SLIME, 2));
+        level2Phases.add(new Phase(6f, EnemyType.GREEN_SLIME, 0));
+        level2Phases.add(new Phase(6f, EnemyType.GREEN_SLIME, 4));
+        level2Phases.add(new Phase(6f, EnemyType.GREEN_SLIME, 0));
+        level2Phases.add(new Phase(4f, EnemyType.GREEN_SLIME, 2));
+        level2Phases.add(new Phase(6f, EnemyType.GREEN_SLIME, 0));
+        level2Phases.add(new Phase(8f, EnemyType.YELLOW_SLIME, 4));
+        level2Phases.add(new Phase(4f, EnemyType.GREEN_SLIME, 3));
+        level2Phases.add(new Phase(6f, EnemyType.YELLOW_SLIME, -1));
+        level2Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, -1));
+        level2Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, -1));
+        level2Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, -1));
+        level2Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, -1));
+        level2Phases.add(new Phase(4f, EnemyType.GREEN_SLIME, -1));
+        level2Phases.add(new Phase(4f, EnemyType.YELLOW_SLIME, -1));
+        level2Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, -1));
+        level2Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, -1));
+        level2Phases.add(new Phase(4f, EnemyType.GREEN_SLIME, -1));
+    }
+
+    private void initLevel3Phases() {
+        level3Phases = new Array<>();
+
+        level3Phases.add(new Phase(7f, EnemyType.GREEN_SLIME, 3));
+        level3Phases.add(new Phase(7f, EnemyType.GREEN_SLIME, 2));
+        level3Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, 4));
+        level3Phases.add(new Phase(5f, EnemyType.YELLOW_SLIME, 0));
+        level3Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, 3));
+        level3Phases.add(new Phase(4f, EnemyType.YELLOW_SLIME, 2));
+        level3Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, 4));
+        level3Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, 1));
+        level3Phases.add(new Phase(5f, EnemyType.GREEN_SLIME, 0));
+        level3Phases.add(new Phase(6f, EnemyType.YELLOW_SLIME, 4));
+        level3Phases.add(new Phase(4f, EnemyType.YELLOW_SLIME, 2));
+        level3Phases.add(new Phase(4f, EnemyType.GREEN_SLIME, 3));
+        level3Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, 0));
+        level3Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, -1));
+        level3Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, -1));
+        level3Phases.add(new Phase(2f, EnemyType.YELLOW_SLIME, -1));
+        level3Phases.add(new Phase(3f, EnemyType.GREEN_SLIME, -1));
+        level3Phases.add(new Phase(2f, EnemyType.YELLOW_SLIME, -1));
+        level3Phases.add(new Phase(3f, EnemyType.YELLOW_SLIME, -1));
+        level3Phases.add(new Phase(2f, EnemyType.GREEN_SLIME, -1));
+
+    }
+
     @Override
     public void update(float deltaTime) {
-        if (!debugSpawn) {
-            debugSpawn = true;
-            spawnEnemy(Constants.PADDING_LEFT + 2.5f, 4f);
-        }
-
         if (gameState.getState() == GameState.State.DEFAULT && checkDefeat()) {
             gameState.changeState(GameState.State.DEFEAT);
             assets.manager.get(Assets.DEFEAT_SFX, Sound.class).play();
         }
 
         switch (level) {
-            case LEVEL_1:
+            case 1:
                 if (!finishedLevel) {
                     updateLevel(level1Phases, deltaTime);
                 }
                 break;
-            case LEVEL_2:
-            case LEVEL_3:
+            case 2:
+                if (!finishedLevel) {
+                    updateLevel(level2Phases, deltaTime);
+                }
+                break;
+
+            case 3:
+                if (!finishedLevel) {
+                    updateLevel(level3Phases, deltaTime);
+                }
+                break;
+        }
+
+        if (finishedLevel) {
+            gameState.changeState(GameState.State.VICTORY);
+            assets.manager.get(Assets.VICTORY_SFX, Sound.class).play();
         }
     }
 
@@ -106,8 +174,6 @@ public class EnemyManagerSystem extends EntitySystem {
                     getEngine().getEntitiesFor(Family.all(EnemyComponent.class).get());
             if (enemies.size() == 0) {
                 finishedLevel = true;
-                gameState.changeState(GameState.State.VICTORY);
-                assets.manager.get(Assets.VICTORY_SFX, Sound.class).play();
             }
         } else {
 
@@ -115,9 +181,10 @@ public class EnemyManagerSystem extends EntitySystem {
             currentPhase.timer -= deltaTime;
             if (currentPhase.timer <= 0) {
                 if (currentPhase.line < 0) {
-                    spawnEnemy();
+                    spawnEnemy(currentPhase.enemyToSpawn);
                 } else {
-                    spawnEnemy(Constants.PADDING_LEFT + currentPhase.line + 0.5f,
+                    spawnEnemy(currentPhase.enemyToSpawn,
+                            Constants.PADDING_LEFT + currentPhase.line + 0.5f,
                             Constants.WORLD_HEIGHT
                     );
                 }
@@ -126,19 +193,17 @@ public class EnemyManagerSystem extends EntitySystem {
         }
     }
 
-    private void spawnEnemy() {
+    private void spawnEnemy(EnemyType type) {
         // choose a random line to spawn
         int line = random.nextInt(Constants.NUM_LINES);
         float x = Constants.PADDING_LEFT + line + 0.5f;
         float y = Constants.WORLD_HEIGHT;
-        spawnEnemy(x, y);
+        spawnEnemy(type, x, y);
     }
 
-    private void spawnEnemy(float x, float y) {
-        EnemyType enemyType = EnemyType.GREEN_SLIME; //temp
-
+    private void spawnEnemy(EnemyType type, float x, float y) {
         Entity enemy =
-                Utils.createEntityCenter(getEngine(), getEnemyRegion(enemyType), x, y, 1f,
+                Utils.createEntityCenter(getEngine(), getEnemyRegion(type), x, y, 1f,
                         1f, DrawingPriorities.ENEMIES
                 );
         Mappers.transform.get(enemy).rectScale = ENEMY_SCALE;
@@ -150,7 +215,13 @@ public class EnemyManagerSystem extends EntitySystem {
         enemy.add(enemyComponent);
 
         HealthComponent healthComponent = new HealthComponent();
-        healthComponent.setHealth(10f);
+        if (type == EnemyType.GREEN_SLIME) {
+            healthComponent.setHealth(10f);
+            enemyComponent.damage = 1f;
+        } else if (type == EnemyType.YELLOW_SLIME) {
+            healthComponent.setHealth(20f);
+            enemyComponent.damage = 1.5f;
+        }
         enemy.add(healthComponent);
 
         MovementComponent movementComponent = new MovementComponent();
@@ -162,15 +233,18 @@ public class EnemyManagerSystem extends EntitySystem {
         stateComponent.currentState = StateComponent.States.MOVING;
 
 
-        Animation<TextureRegion> idleAnimation = animationFactory.getSlimeIdleAnimation(EnemyType.GREEN_SLIME);
-        Animation<TextureRegion> movingAnimation = animationFactory.getSlimeMovingAnimation(EnemyType.GREEN_SLIME);
-        Animation<TextureRegion> attackingAnimation = animationFactory.getSlimeAttackingAnimation(EnemyType.GREEN_SLIME);
+        Animation<TextureRegion> idleAnimation = animationFactory.getSlimeIdleAnimation(type);
+        Animation<TextureRegion> movingAnimation = animationFactory.getSlimeMovingAnimation(type);
+        Animation<TextureRegion> attackingAnimation =
+                animationFactory.getSlimeAttackingAnimation(type);
 
 
         AnimationComponent animationComponent = new AnimationComponent();
         animationComponent.animations.put(StateComponent.States.DEFAULT.ordinal(), idleAnimation);
         animationComponent.animations.put(StateComponent.States.MOVING.ordinal(), movingAnimation);
-        animationComponent.animations.put(StateComponent.States.ATTACKING.ordinal(), attackingAnimation);
+        animationComponent.animations.put(StateComponent.States.ATTACKING.ordinal(),
+                attackingAnimation
+        );
 
 
         enemy.add(stateComponent);
@@ -196,13 +270,9 @@ public class EnemyManagerSystem extends EntitySystem {
         GREEN_SLIME, YELLOW_SLIME, RED_SLIME
     }
 
-    public enum GameLevel {
-        LEVEL_1, LEVEL_2, LEVEL_3
-    }
-
     private static class Phase {
         private float timer;
-        private EnemyType enemyToSpawn;
+        private final EnemyType enemyToSpawn;
         private final int line;
 
         public Phase(float timer, EnemyType enemyToSpawn, int line) {

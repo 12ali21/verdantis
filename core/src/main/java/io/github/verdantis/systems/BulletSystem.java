@@ -67,7 +67,7 @@ public class BulletSystem extends IteratingSystem {
                     applyWindEffect(transformComponent.getCenter());
                     assets.manager.get(Assets.WIND_SFX, Sound.class).play();
                 } else {
-                    assets.manager.get(Assets.SLIME_DAMAGE_SFX, Sound.class).play();
+                    assets.manager.get(Assets.SLIME_DAMAGE_SFX, Sound.class).play(0.5f);
                 }
 
                 getEngine().removeEntity(entity);

@@ -45,6 +45,16 @@ public class PlantingSystem extends IteratingSystem {
         }
 
         if (plantComponent.isPlanted) {
+            TileComponent tileComponent = Mappers.tile.get(plantComponent.occupyingTile);
+            if (tileComponent.getElement() != canonComponent.element) {
+                canonComponent.element = tileComponent.getElement();
+                // reapply animations
+                entity.remove(AnimationComponent.class);
+                addAnimations(entity, canonComponent.element);
+            }
+
+
+
             if (healthComponent.getHealth() <= 0) {
                 Mappers.tile.get(plantComponent.occupyingTile).isOccupied = false;
                 getEngine().removeEntity(entity);

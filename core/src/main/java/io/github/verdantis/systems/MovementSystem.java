@@ -10,8 +10,8 @@ import io.github.verdantis.components.MovementComponent;
 import io.github.verdantis.utils.Mappers;
 
 public class MovementSystem extends IteratingSystem {
+    public static final int MAXIMUM_DRAG = 100;
     private final Vector2 tmp2 = new Vector2();
-    private static final int MAXIMUM_DRAG = 100;
 
     public MovementSystem() {
         super(Family.all(MovementComponent.class).get());

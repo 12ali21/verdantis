@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
@@ -16,17 +17,29 @@ import io.github.verdantis.utils.UpdatesWhenPaused;
 public class InputSystem extends EntitySystem implements InputProcessor {
     private final Engine engine;
     private final Camera camera;
+    private final GameState gameState;
     private boolean isClicked = false;
     private Vector2 tmp2 = new Vector2();
     private final Vector2 clickedPositionWorld = new Vector2();
     private Vector3 tmp3 = new Vector3();
     private boolean isPaused;
 
+    private InputMultiplexer inputMux;
     private InputState currentState = InputState.DEFAULT;
-    public InputSystem(Engine engine, GameState gameState, Camera camera) {
+
+    public InputSystem(Engine engine, UIManager uiManager, GameState gameState, Camera camera) {
+        this.gameState = gameState;
+
+        inputMux = new InputMultiplexer();
+        inputMux.addProcessor(this);
+        inputMux.addProcessor(uiManager.getStage());
+        Gdx.input.setInputProcessor(inputMux);
+
         gameState.registerCallback((state) -> {
             if (state == GameState.State.DEFEAT) {
                 changePause(true);
+            } else if (state == GameState.State.RESUME) {
+                changePause(false);
             }
         });
 
@@ -97,6 +110,11 @@ public class InputSystem extends EntitySystem implements InputProcessor {
             } else {
                 system.setProcessing(!paused);
             }
+        }
+        if (paused) {
+            gameState.changeState(GameState.State.PAUSED);
+        } else {
+            gameState.changeState(GameState.State.DEFAULT);
         }
     }
 

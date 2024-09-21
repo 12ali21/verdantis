@@ -12,4 +12,7 @@ public class Constants {
     public static final float PADDING_LEFT = (Constants.WORLD_WIDTH - Constants.NUM_LINES) / 2f;
     public static final int GREEN_LENGTH = 3;
 
+    public static final String PREFS_NAME = "verdantis";
+    public static final int MAX_LEVEL = 3;
+
 }

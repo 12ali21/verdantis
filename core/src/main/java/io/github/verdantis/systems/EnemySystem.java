@@ -70,7 +70,7 @@ public class EnemySystem extends IteratingSystem {
         if (movement.velocity.isZero(0.01f)) {
             if (enemy.state == EnemyComponent.State.DAMAGING) {
                 state.currentState = StateComponent.States.ATTACKING;
-            } else {
+            } else if (movement.drag > MovementSystem.MAXIMUM_DRAG){
                 state.currentState = StateComponent.States.DEFAULT;
             }
         } else {

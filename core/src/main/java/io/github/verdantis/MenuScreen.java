@@ -3,6 +3,7 @@ package io.github.verdantis;
 import static io.github.verdantis.systems.UIManager.getBackground;
 import static io.github.verdantis.systems.UIManager.getLabelStyle;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
@@ -23,13 +24,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class MenuScreen extends ScreenAdapter {
 
-    private final Runnable onPlay;
+    private final Game game;
     private final Assets assets;
     private Stage stage;
     private Music music;
 
-    public MenuScreen(Runnable onPlay, Assets assets) {
-        this.onPlay = onPlay;
+    public MenuScreen(Game game, Assets assets) {
+        this.game = game;
         this.assets = assets;
     }
 
@@ -68,7 +69,8 @@ public class MenuScreen extends ScreenAdapter {
         playButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                onPlay.run();
+                music.stop();
+                game.setScreen(new GameScreen(game, assets));
             }
         });
 
