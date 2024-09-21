@@ -35,14 +35,14 @@ root_end
 bounds:518,616,256,256
 root_middle
 bounds:2,358,256,256
+root_trapped
+bounds:1544,1646,256,256
 soul_orb
 bounds:518,550,64,64
 tree
 bounds:2,1390,1024,512
 wind_bullet
 bounds:2,2,96,96
-wind_plant
-bounds:1544,1646,256,256
 wind_tile
 bounds:260,358,256,256
 yellow_slime

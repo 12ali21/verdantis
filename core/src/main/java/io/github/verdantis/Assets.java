@@ -27,10 +27,15 @@ public class Assets implements Disposable {
     public static final String WIND_BULLET = "wind_bullet";
     public static final String WIND_TILE = "wind_tile";
     public static final String YELLOW_SLIME = "yellow_slime";
+
+    // animations
     public static final String FIRE_SHOOTING = "fire_shoot";
     public static final String GREEN_SHOOTING = "green_shoot";
     public static final String AIR_SHOOTING = "air_shoot";
     public static final String ICE_SHOOTING = "ice_shoot";
+    public static final String GUST_EFFECT = "gust";
+    public static final String FIRE_EFFECT = "on_fire";
+    public static final String TRAPPED_EFFECT = "root_trapped";
 
     public static final String FIRE_SFX = "audio/sfx/fire.wav";
     public static final String FREEZE_SFX = "audio/sfx/freeze.wav";
@@ -48,6 +53,7 @@ public class Assets implements Disposable {
 
     private static final String SPRITES_ATLAS = "sprites.atlas";
     private static final String CANON_SHOOTING_ATLAS = "animations/canon_shooting.atlas";
+    private static final String EFFECTS_ATLAS = "animations/effects.atlas";
 
     public final AssetManager manager;
     public Assets() {
@@ -58,6 +64,7 @@ public class Assets implements Disposable {
     public void loadAssets() {
         manager.load(SPRITES_ATLAS, TextureAtlas.class);
         manager.load(CANON_SHOOTING_ATLAS, TextureAtlas.class);
+        manager.load(EFFECTS_ATLAS, TextureAtlas.class);
 
         // load sfx and music
         manager.load(FIRE_SFX, com.badlogic.gdx.audio.Sound.class);
@@ -85,6 +92,10 @@ public class Assets implements Disposable {
 
     public TextureAtlas canonShootingAtlas() {
         return manager.get(CANON_SHOOTING_ATLAS);
+    }
+
+    public TextureAtlas effectsAtlas() {
+        return manager.get(EFFECTS_ATLAS);
     }
 
     @Override

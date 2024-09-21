@@ -27,6 +27,7 @@ import io.github.verdantis.systems.AnimationSystem;
 import io.github.verdantis.systems.BulletSystem;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
+import io.github.verdantis.systems.EffectSystem;
 import io.github.verdantis.systems.EnemyManagerSystem;
 import io.github.verdantis.systems.EnemySystem;
 import io.github.verdantis.systems.FireDamageSystem;
@@ -71,7 +72,7 @@ public class GameScreen extends ScreenAdapter {
         initializeSystems();
 
         createTree();
-//        createRoots();
+        createRoots();
         createTiles(3);
         createSeedTray();
 
@@ -123,6 +124,7 @@ public class GameScreen extends ScreenAdapter {
         WindSystem windSystem = new WindSystem();
         RootsSystem rootsSystem = new RootsSystem(assets);
         AnimationSystem animationSystem = new AnimationSystem();
+        EffectSystem effectSystem = new EffectSystem();
 
         engine.addSystem(renderingSystem);
         engine.addSystem(inputSystem);
@@ -141,6 +143,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(uiManager);
         engine.addSystem(rootsSystem);
         engine.addSystem(animationSystem);
+        engine.addSystem(effectSystem);
     }
 
     private void createTree() {

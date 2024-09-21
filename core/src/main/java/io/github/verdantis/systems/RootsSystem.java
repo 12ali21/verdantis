@@ -5,18 +5,28 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 import io.github.verdantis.Assets;
+import io.github.verdantis.components.AnimationComponent;
+import io.github.verdantis.components.EffectComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.FreezingComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.MovementComponent;
 import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.RootComponent;
+import io.github.verdantis.components.StateComponent;
+import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.utils.Constants;
+import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Mappers;
+import io.github.verdantis.utils.Utils;
 
 public class RootsSystem extends IteratingSystem {
 
@@ -62,6 +72,7 @@ public class RootsSystem extends IteratingSystem {
                     OnFireComponent onFireComponent = Mappers.onFire.get(enemy);
                     if (onFireComponent == null) {
                         onFireComponent = new OnFireComponent();
+                        onFireComponent.effect = getTrappedEffect(enemyTransform.getCenter());
                         enemy.add(onFireComponent);
                     }
                     onFireComponent.fireDamage = FIRE_DAMAGE;
@@ -91,5 +102,17 @@ public class RootsSystem extends IteratingSystem {
                 getEngine().removeEntity(entity);
             }
         }
+    }
+
+    private Entity getTrappedEffect(Vector2 position) {
+        Entity effect = Utils.createEntityCenter(getEngine(), assets.spritesAtlas().findRegion(Assets.TRAPPED_EFFECT),
+                position.x,
+                position.y, 1f, 1f, DrawingPriorities.FIRE_EFFECT
+        );
+
+        TextureComponent textureComponent = Mappers.texture.get(effect);
+        getEngine().addEntity(effect);
+
+        return effect;
     }
 }

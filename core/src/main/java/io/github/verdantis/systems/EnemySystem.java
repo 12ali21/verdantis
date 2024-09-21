@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import io.github.verdantis.Assets;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.HealthComponent;
+import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.RootComponent;
 import io.github.verdantis.components.TransformComponent;
@@ -48,6 +49,11 @@ public class EnemySystem extends IteratingSystem {
         // Enemy death
         if (enemyHealth.getHealth() <= 0) {
             uiManager.changeSoulAmount(enemy.soulAmount);
+            OnFireComponent onFireComponent = Mappers.onFire.get(entity);
+            if (onFireComponent != null) {
+                if (onFireComponent.effect != null)
+                    getEngine().removeEntity(onFireComponent.effect);
+            }
             getEngine().removeEntity(entity);
             assets.manager.get(Assets.SLIME_DEATH_SFX, Sound.class).play();
         }

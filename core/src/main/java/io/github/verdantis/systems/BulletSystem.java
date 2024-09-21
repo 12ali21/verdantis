@@ -5,21 +5,30 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
 import io.github.verdantis.Assets;
+import io.github.verdantis.components.AnimationComponent;
 import io.github.verdantis.components.BulletComponent;
+import io.github.verdantis.components.EffectComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.FreezingComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.OnFireComponent;
+import io.github.verdantis.components.StateComponent;
+import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.components.WindComponent;
 import io.github.verdantis.utils.Constants;
+import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Mappers;
+import io.github.verdantis.utils.Utils;
 
 public class BulletSystem extends IteratingSystem {
     private final Assets assets;
@@ -76,11 +85,45 @@ public class BulletSystem extends IteratingSystem {
         OnFireComponent onFireComponent = Mappers.onFire.get(enemy);
         if (onFireComponent == null) {
             onFireComponent = new OnFireComponent();
-            onFireComponent.ticks = fireTicks;
+            onFireComponent.effect =
+                    getFireEffect(Mappers.transform.get(enemy).getCenter());
+            onFireComponent.effectOffset.set(0, 0.2f);
             enemy.add(onFireComponent);
-        } else {
-            onFireComponent.ticks = fireTicks;
         }
+        onFireComponent.ticks = fireTicks;
+    }
+
+    private Entity getFireEffect(Vector2 position) {
+        Animation<TextureRegion> effectAnimation =
+                new Animation<>(0.1f, assets.effectsAtlas().findRegions(Assets.FIRE_EFFECT),
+                        Animation.PlayMode.LOOP
+                );
+
+        Entity effect = Utils.createEntityCenter(getEngine(), effectAnimation.getKeyFrame(0f),
+                position.x,
+                position.y, 1f, 1f, DrawingPriorities.FIRE_EFFECT
+        );
+
+        TextureComponent textureComponent = Mappers.texture.get(effect);
+        textureComponent.color = new Color(1, 1, 1, 0.2f);
+        textureComponent.textureScale = 1.5f;
+
+        StateComponent stateComponent = new StateComponent();
+        stateComponent.currentState = StateComponent.States.DEFAULT;
+
+        AnimationComponent ani = new AnimationComponent();
+        ani.animations.put(stateComponent.currentState.ordinal(), effectAnimation);
+
+        EffectComponent effectComponent = new EffectComponent();
+        effectComponent.duration = -1;
+
+        effect.add(stateComponent);
+        effect.add(ani);
+        effect.add(effectComponent);
+
+        getEngine().addEntity(effect);
+
+        return effect;
     }
 
     private void dealIceDamage(Entity enemy) {
@@ -107,6 +150,36 @@ public class BulletSystem extends IteratingSystem {
                 dealWindDamage(enemy);
             }
         }
+
+        // effect entity
+        getWindEffect(contactPos);
+    }
+
+    private void getWindEffect(Vector2 contactPos) {
+        Animation<TextureRegion> effectAnimation =
+                new Animation<>(0.1f, assets.effectsAtlas().findRegions(Assets.GUST_EFFECT));
+
+        Entity effect = Utils.createEntity(getEngine(), effectAnimation.getKeyFrame(0f),
+                contactPos.x - 0.5f,
+                contactPos.y, 1f, 2f, DrawingPriorities.GUST
+        );
+        Mappers.texture.get(effect).color = new Color(1, 1, 1, 0.5f);
+
+
+        StateComponent stateComponent = new StateComponent();
+        stateComponent.currentState = StateComponent.States.DEFAULT;
+
+        AnimationComponent ani = new AnimationComponent();
+        ani.animations.put(stateComponent.currentState.ordinal(), effectAnimation);
+
+        EffectComponent effectComponent = new EffectComponent();
+        effectComponent.duration = effectAnimation.getAnimationDuration();
+
+        effect.add(stateComponent);
+        effect.add(ani);
+        effect.add(effectComponent);
+
+        getEngine().addEntity(effect);
     }
 
     private void dealWindDamage(Entity entity) {

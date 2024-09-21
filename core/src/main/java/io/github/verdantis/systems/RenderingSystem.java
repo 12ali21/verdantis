@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -50,7 +51,8 @@ public class RenderingSystem extends SortedIteratingSystem implements UpdatesWhe
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         TransformComponent transform = Mappers.transform.get(entity);
-        TextureRegion region = Mappers.texture.get(entity).region;
+        TextureComponent textureComponent = Mappers.texture.get(entity);
+        TextureRegion region = textureComponent.region;
         if (region == null) {
             return;
         }
@@ -59,10 +61,18 @@ public class RenderingSystem extends SortedIteratingSystem implements UpdatesWhe
 
         float originX = width / 2;
         float originY = height / 2;
+
+        if (textureComponent.color != null) {
+            batch.setColor(textureComponent.color);
+        }
         batch.draw(region, transform.position.x, transform.position.y,
-            originX, originY,
-            width, height,
-            1f, 1f, transform.rotation);
+                originX, originY,
+                width, height,
+                textureComponent.textureScale, textureComponent.textureScale, transform.rotation
+        );
+
+        // reset batch color
+        batch.setColor(Color.WHITE);
     }
 
     public void resize(int w, int h) {
