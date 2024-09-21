@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 public class TransformComponent implements Component {
     private final Rectangle rect = new Rectangle();
     private final Vector2 tmp2 = new Vector2();
+
+    public float rectScale = 1f;
     public final Vector2 position = new Vector2();
     public float width = 1, height = 1;
     public float rotation = 0f;
@@ -25,7 +27,8 @@ public class TransformComponent implements Component {
     }
 
     public Rectangle getRect() {
-        rect.set(position.x, position.y, width, height);
+        rect.set(position.x , position.y, width * rectScale, height * rectScale);
+        rect.setCenter(position.x + width / 2, position.y + height / 2);
         return rect;
     }
 

@@ -283,6 +283,7 @@ public class GameScreen extends ScreenAdapter {
                     thisRegion = normalTile;
                 }
 
+                thisElement = Element.AIR;
                 Entity tileEntity =
                         Utils.createEntity(engine, thisRegion, Constants.PADDING_LEFT + i,
                                 Constants.PADDING_BOTTOM + j, DrawingPriorities.TILES

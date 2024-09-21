@@ -33,6 +33,8 @@ public class MovementSystem extends IteratingSystem {
             // apply acceleration
             tmp2.set(movement.acceleration).scl(deltaTime);
             movement.velocity.add(tmp2);
+
+            movement.acceleration.x = 0;
         }
         // apply velocity
         tmp2.set(movement.velocity).scl(deltaTime);

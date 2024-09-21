@@ -76,7 +76,7 @@ public class EnemySystem extends IteratingSystem {
 
             if (enemyTransform.getRect().overlaps(Mappers.transform.get(plantEntity).getRect())) {
                 enemyComponent.state = EnemyComponent.State.DAMAGING;
-                enemyVelocity.velocity.setZero();
+                enemyVelocity.velocity.y = 0;
                 damaged = true;
                 if (enemyComponent.damageTimer <= 0) {
                     enemyComponent.damageTimer = enemyComponent.damageCooldown;

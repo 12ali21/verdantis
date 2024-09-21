@@ -22,7 +22,7 @@ import io.github.verdantis.utils.Mappers;
 import io.github.verdantis.utils.Utils;
 
 public class EnemyManagerSystem extends EntitySystem {
-    private static final float ENEMY_SIZE = 0.7f;
+    public static final float ENEMY_SCALE = 0.7f;
     private final Assets assets;
     private final GameState gameState;
     private final GameLevel level;
@@ -130,9 +130,12 @@ public class EnemyManagerSystem extends EntitySystem {
         EnemyType enemyType = EnemyType.GREEN_SLIME; //temp
 
         Entity enemy =
-                Utils.createEntityCenter(getEngine(), getEnemyRegion(enemyType), x, y, ENEMY_SIZE,
-                        ENEMY_SIZE, DrawingPriorities.ENEMIES
+                Utils.createEntityCenter(getEngine(), getEnemyRegion(enemyType), x, y, 1f,
+                        1f, DrawingPriorities.ENEMIES
                 );
+        Mappers.transform.get(enemy).rectScale = ENEMY_SCALE;
+        Mappers.texture.get(enemy).textureScale = ENEMY_SCALE;
+
         EnemyComponent enemyComponent = new EnemyComponent();
 
         enemyComponent.maxSpeed = 0.5f;

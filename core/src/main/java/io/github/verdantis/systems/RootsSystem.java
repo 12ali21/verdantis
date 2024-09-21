@@ -111,6 +111,7 @@ public class RootsSystem extends IteratingSystem {
         );
 
         TextureComponent textureComponent = Mappers.texture.get(effect);
+        textureComponent.textureScale = EnemyManagerSystem.ENEMY_SCALE;
         getEngine().addEntity(effect);
 
         return effect;

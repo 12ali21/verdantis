@@ -2,7 +2,10 @@ package io.github.verdantis;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.utils.Disposable;
+
+import java.util.Random;
 
 public class Assets implements Disposable {
     public static final String AIR_PLANT = "air_plant";
@@ -56,6 +59,7 @@ public class Assets implements Disposable {
     private static final String EFFECTS_ATLAS = "animations/effects.atlas";
 
     public final AssetManager manager;
+    public final Random random = new RandomXS128();
     public Assets() {
         manager = new AssetManager();
     }

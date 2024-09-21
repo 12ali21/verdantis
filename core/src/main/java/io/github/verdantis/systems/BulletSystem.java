@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -184,8 +185,19 @@ public class BulletSystem extends IteratingSystem {
 
     private void dealWindDamage(Entity entity) {
         WindComponent wind = Mappers.wind.get(entity);
+        TransformComponent transform = Mappers.transform.get(entity);
         if (wind == null) {
             wind = new WindComponent();
+            if (assets.random.nextFloat() < WindComponent.LANE_CHANGE_CHANCE) {
+                int currentLane = MathUtils.round(transform.position.x - Constants.PADDING_LEFT);
+                if (currentLane == 0) {
+                    wind.laneOffset = 1;
+                } else if (currentLane == Constants.NUM_LINES - 1) {
+                    wind.laneOffset = -1;
+                } else {
+                    wind.laneOffset = assets.random.nextBoolean() ? 1 : -1;
+                }
+            }
             entity.add(wind);
         } else {
             wind.windTimer = 0f;
