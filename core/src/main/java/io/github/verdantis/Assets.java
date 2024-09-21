@@ -32,35 +32,63 @@ public class Assets implements Disposable {
     public static final String AIR_SHOOTING = "air_shoot";
     public static final String ICE_SHOOTING = "ice_shoot";
 
+    public static final String FIRE_SFX = "audio/sfx/fire.wav";
+    public static final String FREEZE_SFX = "audio/sfx/freeze.wav";
+    public static final String WIND_SFX = "audio/sfx/wind.wav";
+    public static final String PLANTING_SFX = "audio/sfx/planting.wav";
+    public static final String ROOTS_EXPANDING_SFX = "audio/sfx/roots_expanding.wav";
+    public static final String SLIME_DEATH_SFX = "audio/sfx/slime_death.wav";
+    public static final String SLIME_DAMAGE_SFX = "audio/sfx/slime_damage.wav";
+    public static final String SLIME_ATTACK_SFX = "audio/sfx/slime_attack.wav";
+    public static final String VICTORY_SFX = "audio/sfx/victory.wav";
+    public static final String DEFEAT_SFX = "audio/sfx/game_over.wav";
+
+    public static final String MAIN_MENU_MUSIC = "audio/music/dark_clouds.mp3";
+    public static final String GAME_MUSIC = "audio/music/constance.mp3";
 
     private static final String SPRITES_ATLAS = "sprites.atlas";
     private static final String CANON_SHOOTING_ATLAS = "animations/canon_shooting.atlas";
 
-    private final AssetManager assetManager;
+    public final AssetManager manager;
     public Assets() {
-        assetManager = new AssetManager();
+        manager = new AssetManager();
     }
 
 
     public void loadAssets() {
-        assetManager.load(SPRITES_ATLAS, TextureAtlas.class);
-        assetManager.load(CANON_SHOOTING_ATLAS, TextureAtlas.class);
+        manager.load(SPRITES_ATLAS, TextureAtlas.class);
+        manager.load(CANON_SHOOTING_ATLAS, TextureAtlas.class);
+
+        // load sfx and music
+        manager.load(FIRE_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(FREEZE_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(WIND_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(PLANTING_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(ROOTS_EXPANDING_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(SLIME_DEATH_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(SLIME_DAMAGE_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(SLIME_ATTACK_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(VICTORY_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(DEFEAT_SFX, com.badlogic.gdx.audio.Sound.class);
+
+        manager.load(MAIN_MENU_MUSIC, com.badlogic.gdx.audio.Music.class);
+        manager.load(GAME_MUSIC, com.badlogic.gdx.audio.Music.class);
     }
 
     public boolean update() {
-        return assetManager.update();
+        return manager.update();
     }
 
     public TextureAtlas spritesAtlas() {
-        return assetManager.get(SPRITES_ATLAS);
+        return manager.get(SPRITES_ATLAS);
     }
 
     public TextureAtlas canonShootingAtlas() {
-        return assetManager.get(CANON_SHOOTING_ATLAS);
+        return manager.get(CANON_SHOOTING_ATLAS);
     }
 
     @Override
     public void dispose() {
-        assetManager.dispose();
+        manager.dispose();
     }
 }

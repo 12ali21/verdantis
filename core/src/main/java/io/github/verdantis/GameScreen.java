@@ -10,6 +10,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SoundLoader;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -75,6 +78,11 @@ public class GameScreen extends ScreenAdapter {
         createTiles(3);
         createSeedTray();
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        Music music = assets.manager.get(Assets.GAME_MUSIC, Music.class);
+        music.setLooping(true);
+        music.setVolume(0.5f);
+        music.play();
     }
 
     private void initializeSystems() {
@@ -87,17 +95,17 @@ public class GameScreen extends ScreenAdapter {
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
         SeedSystem seedSystem = new SeedSystem(gameState, uiManager);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem, gameState);
-        PlantingSystem plantingSystem = new PlantingSystem(uiManager, animationFactory);
+        PlantingSystem plantingSystem = new PlantingSystem(uiManager, animationFactory, assets);
         ShootingSystem shootingSystem = new ShootingSystem(assets);
         MovementSystem movementSystem = new MovementSystem();
-        BulletSystem bulletSystem = new BulletSystem();
+        BulletSystem bulletSystem = new BulletSystem(assets);
         EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(assets);
-        EnemySystem enemySystem = new EnemySystem(uiManager);
+        EnemySystem enemySystem = new EnemySystem(uiManager, assets);
         // Element systems
         FireDamageSystem fireDamageSystem = new FireDamageSystem();
         FreezingSystem freezingSystem = new FreezingSystem();
         WindSystem windSystem = new WindSystem();
-        RootsSystem rootsSystem = new RootsSystem();
+        RootsSystem rootsSystem = new RootsSystem(assets);
         AnimationSystem animationSystem = new AnimationSystem();
 
         engine.addSystem(renderingSystem);

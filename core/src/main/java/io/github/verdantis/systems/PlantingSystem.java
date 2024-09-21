@@ -4,7 +4,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.audio.Sound;
 
+import io.github.verdantis.Assets;
 import io.github.verdantis.components.AnimationComponent;
 import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.DraggableComponent;
@@ -20,11 +22,13 @@ import io.github.verdantis.utils.Mappers;
 public class PlantingSystem extends IteratingSystem {
     private final UIManager uiManager;
     private final AnimationFactory animationFactory;
+    private final Assets assets;
 
-    public PlantingSystem(UIManager uiManager, AnimationFactory animationFactory) {
+    public PlantingSystem(UIManager uiManager, AnimationFactory animationFactory, Assets assets) {
         super(Family.all(PlantComponent.class).get());
         this.uiManager = uiManager;
         this.animationFactory = animationFactory;
+        this.assets = assets;
     }
 
     @Override
@@ -68,6 +72,7 @@ public class PlantingSystem extends IteratingSystem {
 
                 canonComponent.element = tileComponent.element;
                 addAnimations(entity, canonComponent.element);
+                assets.manager.get(Assets.PLANTING_SFX, Sound.class).play();
                 break;
             }
         }

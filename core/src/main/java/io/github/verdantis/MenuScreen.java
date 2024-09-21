@@ -6,6 +6,7 @@ import static io.github.verdantis.systems.UIManager.getLabelStyle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,10 +24,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class MenuScreen extends ScreenAdapter {
 
     private final Runnable onPlay;
+    private final Assets assets;
     private Stage stage;
+    private Music music;
 
-    public MenuScreen(Runnable onPlay) {
+    public MenuScreen(Runnable onPlay, Assets assets) {
         this.onPlay = onPlay;
+        this.assets = assets;
     }
 
     @Override
@@ -70,6 +74,11 @@ public class MenuScreen extends ScreenAdapter {
 
 
         table.defaults().reset();
+
+        music = assets.manager.get(Assets.MAIN_MENU_MUSIC, Music.class);
+        music.setLooping(true);
+        music.setVolume(0.5f);
+        music.play();
     }
 
 
@@ -94,5 +103,6 @@ public class MenuScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
+        music.stop();
     }
 }

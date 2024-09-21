@@ -4,7 +4,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.audio.Sound;
 
+import io.github.verdantis.Assets;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.PlantComponent;
@@ -16,10 +18,12 @@ import io.github.verdantis.utils.Mappers;
 public class EnemySystem extends IteratingSystem {
 
     private final UIManager uiManager;
+    private final Assets assets;
 
-    public EnemySystem(UIManager uiManager) {
+    public EnemySystem(UIManager uiManager, Assets assets) {
         super(Family.all(EnemyComponent.class).get());
         this.uiManager = uiManager;
+        this.assets = assets;
     }
 
     @Override
@@ -45,6 +49,7 @@ public class EnemySystem extends IteratingSystem {
         if (enemyHealth.getHealth() <= 0) {
             uiManager.changeSoulAmount(enemy.soulAmount);
             getEngine().removeEntity(entity);
+            assets.manager.get(Assets.SLIME_DEATH_SFX, Sound.class).play();
         }
     }
 
@@ -70,6 +75,8 @@ public class EnemySystem extends IteratingSystem {
                 if (enemyComponent.damageTimer <= 0) {
                     enemyComponent.damageTimer = enemyComponent.damageCooldown;
                     plantHealth.setHealth(plantHealth.getHealth() - enemyComponent.damage);
+                    assets.manager.get(Assets.SLIME_ATTACK_SFX, Sound.class).play();
+                    break;
                 }
             }
         }
@@ -95,6 +102,8 @@ public class EnemySystem extends IteratingSystem {
                 if (enemyComponent.damageTimer <= 0) {
                     enemyComponent.damageTimer = enemyComponent.damageCooldown;
                     rootHealth.setHealth(rootHealth.getHealth() - enemyComponent.damage);
+                    assets.manager.get(Assets.SLIME_ATTACK_SFX, Sound.class).play();
+                    break;
                 }
             }
         }

@@ -4,8 +4,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 
+import io.github.verdantis.Assets;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.FreezingComponent;
 import io.github.verdantis.components.HealthComponent;
@@ -20,9 +22,11 @@ public class RootsSystem extends IteratingSystem {
 
     private final static int NUM_FIRE_TICKS = 3;
     private final static int FIRE_DAMAGE = 5;
+    private final Assets assets;
 
-    public RootsSystem() {
+    public RootsSystem(Assets assets) {
         super(Family.all(RootComponent.class).get());
+        this.assets = assets;
     }
 
     @Override
@@ -41,6 +45,7 @@ public class RootsSystem extends IteratingSystem {
             movementComponent.acceleration.set(0, 100f);
             movementComponent.maxSpeed = 30f;
             entity.add(movementComponent);
+            assets.manager.get(Assets.ROOTS_EXPANDING_SFX, Sound.class).play();
         }
 
         if (rootComponent.state == RootComponent.RootState.EXPANDING) {

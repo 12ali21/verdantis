@@ -4,10 +4,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
+import io.github.verdantis.Assets;
 import io.github.verdantis.components.BulletComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.FreezingComponent;
@@ -20,8 +22,11 @@ import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Mappers;
 
 public class BulletSystem extends IteratingSystem {
-    public BulletSystem() {
+    private final Assets assets;
+
+    public BulletSystem(Assets assets) {
         super(Family.all(BulletComponent.class).get());
+        this.assets = assets;
     }
 
     @Override
@@ -44,10 +49,15 @@ public class BulletSystem extends IteratingSystem {
                 enemyHealth.setHealth(enemyHealth.getHealth() - bulletComponent.damage);
                 if (bulletComponent.bulletType == Element.FIRE) {
                     dealFireDamage(enemy);
+                    assets.manager.get(Assets.FIRE_SFX, Sound.class).play();
                 } else if (bulletComponent.bulletType == Element.ICE) {
                     dealIceDamage(enemy);
+                    assets.manager.get(Assets.FREEZE_SFX, Sound.class).play();
                 } else if (bulletComponent.bulletType == Element.AIR) {
                     applyWindEffect(transformComponent.getCenter());
+                    assets.manager.get(Assets.WIND_SFX, Sound.class).play();
+                } else {
+                    assets.manager.get(Assets.SLIME_DAMAGE_SFX, Sound.class).play();
                 }
 
                 getEngine().removeEntity(entity);

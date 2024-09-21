@@ -18,9 +18,10 @@ public class Main extends ApplicationAdapter {
         assets = new Assets();
         assets.loadAssets();
         currentScreen = new MenuScreen(() -> {
+            currentScreen.dispose();
             currentScreen = new GameScreen(assets);
             currentScreen.show();
-        });
+        }, assets);
     }
 
     @Override
