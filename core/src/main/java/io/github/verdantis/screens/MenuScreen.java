@@ -1,4 +1,4 @@
-package io.github.verdantis;
+package io.github.verdantis.screens;
 
 import static io.github.verdantis.systems.UIManager.getBackground;
 import static io.github.verdantis.systems.UIManager.getLabelStyle;
@@ -9,8 +9,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -18,9 +16,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import io.github.verdantis.Assets;
 
 public class MenuScreen extends ScreenAdapter {
 
@@ -46,7 +45,6 @@ public class MenuScreen extends ScreenAdapter {
 
         Table table = new Table(skin);
         table.setFillParent(true);
-        table.setBackground(getBackground(new Color(0x007f09ff)));
         stage.addActor(table);
 
         Label gameName = new Label("Verdantis", getLabelStyle(150, "cinzel_black"));
@@ -74,6 +72,18 @@ public class MenuScreen extends ScreenAdapter {
             }
         });
 
+        Label creditsLabel = new Label("Credits", getLabelStyle(64, "cinzel_bold"));
+        Button creditsButton = new Button(skin);
+        creditsButton.add(creditsLabel);
+        table.add(creditsButton).padBottom(20).row();
+
+        creditsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new CreditsScreen(game, assets));
+            }
+        });
+
 
         table.defaults().reset();
 
@@ -86,6 +96,7 @@ public class MenuScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(new Color(0x007f09ff));
         stage.act();
         stage.draw();
     }

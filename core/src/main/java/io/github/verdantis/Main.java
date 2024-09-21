@@ -1,12 +1,10 @@
 package io.github.verdantis;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.ScreenUtils;
+
+import io.github.verdantis.screens.MenuScreen;
+import io.github.verdantis.screens.SplashScreen;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.

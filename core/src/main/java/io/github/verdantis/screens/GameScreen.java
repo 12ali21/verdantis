@@ -1,4 +1,4 @@
-package io.github.verdantis;
+package io.github.verdantis.screens;
 
 import static io.github.verdantis.systems.RenderingSystem.PPM;
 
@@ -19,6 +19,8 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 
 import java.util.Random;
 
+import io.github.verdantis.Assets;
+import io.github.verdantis.GameState;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.ElementsComponent;
 import io.github.verdantis.components.HealthComponent;

@@ -1,4 +1,4 @@
-package io.github.verdantis;
+package io.github.verdantis.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import io.github.verdantis.Assets;
+import io.github.verdantis.Main;
 
 public class SplashScreen extends ScreenAdapter {
     private final Main main;
@@ -42,6 +45,10 @@ public class SplashScreen extends ScreenAdapter {
         batch.end();
 
         timer -= delta;
+
+        if (Gdx.input.justTouched()) {
+            timer = 0;
+        }
         if (timer <= 0) {
             if (assets.update()) {
                 main.splashDone(assets);
