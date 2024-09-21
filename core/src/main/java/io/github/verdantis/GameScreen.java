@@ -121,7 +121,9 @@ public class GameScreen extends ScreenAdapter {
         MovementSystem movementSystem = new MovementSystem();
         BulletSystem bulletSystem = new BulletSystem(assets);
         EnemyManagerSystem enemyManagerSystem =
-                new EnemyManagerSystem(assets, gameState, EnemyManagerSystem.GameLevel.LEVEL_1);
+                new EnemyManagerSystem(assets, gameState, animationFactory,
+                        EnemyManagerSystem.GameLevel.LEVEL_1
+                );
         EnemySystem enemySystem = new EnemySystem(uiManager, assets);
         // Element systems
         FireDamageSystem fireDamageSystem = new FireDamageSystem();

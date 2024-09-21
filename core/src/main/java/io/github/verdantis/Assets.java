@@ -41,6 +41,10 @@ public class Assets implements Disposable {
     public static final String GUST_EFFECT = "gust";
     public static final String FIRE_EFFECT = "on_fire";
     public static final String TRAPPED_EFFECT = "root_trapped";
+    public static final String GREEN_SLIME_MOVING = "green_slime_moving";
+    public static final String YELLOW_SLIME_MOVING = "yellow_slime_moving";
+    public static final String GREEN_SLIME_ATTACKING = "green_slime_attacking";
+    public static final String YELLOW_SLIME_ATTACKING = "yellow_slime_attacking";
 
     public static final String FIRE_SFX = "audio/sfx/fire.wav";
     public static final String FREEZE_SFX = "audio/sfx/freeze.wav";
@@ -108,6 +112,10 @@ public class Assets implements Disposable {
 
     public TextureAtlas effectsAtlas() {
         return manager.get(EFFECTS_ATLAS);
+    }
+
+    public TextureAtlas slimeAtlas() {
+        return manager.get(SLIME_ATLAS);
     }
 
     @Override

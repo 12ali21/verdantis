@@ -7,11 +7,13 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.audio.Sound;
 
 import io.github.verdantis.Assets;
+import io.github.verdantis.components.AnimationComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.PlantComponent;
 import io.github.verdantis.components.RootComponent;
+import io.github.verdantis.components.StateComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.components.MovementComponent;
 import io.github.verdantis.utils.Mappers;
@@ -32,10 +34,16 @@ public class EnemySystem extends IteratingSystem {
         EnemyComponent enemy = Mappers.enemy.get(entity);
         HealthComponent enemyHealth = Mappers.health.get(entity);
         MovementComponent enemyVelocity = Mappers.movement.get(entity);
-
+        StateComponent state = Mappers.state.get(entity);
+        AnimationComponent ani = Mappers.animation.get(entity);
 
         if (enemy.state == EnemyComponent.State.DAMAGING) {
             enemy.damageTimer -= deltaTime;
+            float aniDuration =
+                    ani.animations.get(state.currentState.ordinal()).getAnimationDuration();
+            if (enemy.damageTimer > aniDuration) {
+                state.time = 0;
+            }
         }
 
         boolean damaged = damagePlants(entity);
@@ -56,6 +64,19 @@ public class EnemySystem extends IteratingSystem {
             }
             getEngine().removeEntity(entity);
             assets.manager.get(Assets.SLIME_DEATH_SFX, Sound.class).play();
+        }
+
+        MovementComponent movement = Mappers.movement.get(entity);
+        if (movement.velocity.isZero(0.01f)) {
+            if (enemy.state == EnemyComponent.State.DAMAGING) {
+                state.currentState = StateComponent.States.ATTACKING;
+            } else {
+                state.currentState = StateComponent.States.DEFAULT;
+            }
+        } else {
+            if (enemy.state == EnemyComponent.State.WALKING) {
+                state.currentState = StateComponent.States.MOVING;
+            }
         }
     }
 

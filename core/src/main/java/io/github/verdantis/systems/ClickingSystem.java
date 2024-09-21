@@ -26,9 +26,6 @@ public class ClickingSystem extends IteratingSystem {
         Vector2 clickedPos = inputSystem.getClickedPositionInWorld();
         boolean isClicked = inputSystem.isMouseDown();
 
-        if (Mappers.elements.get(entity) != null) {
-            System.out.println(transformComponent.getRect() + " | " + clickedPos);
-        }
         if (transformComponent.getRect().contains(clickedPos)) {
             clickableComponent.clicked = isClicked;
         } else {

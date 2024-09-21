@@ -45,7 +45,6 @@ public class WindSystem extends IteratingSystem {
             }
             float abs = currentLane - (wind.originalLane + wind.laneOffset);
             abs = abs < 0 ? -abs : abs;
-            System.out.println(abs + " " + currentLane + " " + wind.originalLane);
             if (abs < 0.01f) {
                 transform.position.x = wind.originalLane + wind.laneOffset + Constants.PADDING_LEFT;
 

@@ -6,6 +6,6 @@ public class StateComponent implements Component {
     public States currentState = States.DEFAULT;
     public float time;
     public enum States {
-        DEFAULT, SHOOTING
+        DEFAULT, SHOOTING, MOVING, ATTACKING
     }
 }

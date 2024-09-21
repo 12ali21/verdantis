@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
@@ -12,10 +13,13 @@ import com.badlogic.gdx.utils.Array;
 
 import io.github.verdantis.Assets;
 import io.github.verdantis.GameState;
+import io.github.verdantis.components.AnimationComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.MovementComponent;
+import io.github.verdantis.components.StateComponent;
 import io.github.verdantis.components.TransformComponent;
+import io.github.verdantis.utils.AnimationFactory;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Mappers;
@@ -25,6 +29,7 @@ public class EnemyManagerSystem extends EntitySystem {
     public static final float ENEMY_SCALE = 0.7f;
     private final Assets assets;
     private final GameState gameState;
+    private final AnimationFactory animationFactory;
     private final GameLevel level;
     private final Array<Phase> level1Phases;
     private RandomXS128 random = new RandomXS128();
@@ -34,9 +39,12 @@ public class EnemyManagerSystem extends EntitySystem {
 
     private boolean debugSpawn = false;
 
-    public EnemyManagerSystem(Assets assets, GameState gameState, GameLevel level) {
+    public EnemyManagerSystem(Assets assets, GameState gameState, AnimationFactory animationFactory,
+            GameLevel level
+    ) {
         this.assets = assets;
         this.gameState = gameState;
+        this.animationFactory = animationFactory;
         this.level = level;
 
         level1Phases = new Array<>();
@@ -150,6 +158,23 @@ public class EnemyManagerSystem extends EntitySystem {
         movementComponent.acceleration.set(0, -0.5f);
         enemy.add(movementComponent);
 
+        StateComponent stateComponent = new StateComponent();
+        stateComponent.currentState = StateComponent.States.MOVING;
+
+
+        Animation<TextureRegion> idleAnimation = animationFactory.getSlimeIdleAnimation(EnemyType.GREEN_SLIME);
+        Animation<TextureRegion> movingAnimation = animationFactory.getSlimeMovingAnimation(EnemyType.GREEN_SLIME);
+        Animation<TextureRegion> attackingAnimation = animationFactory.getSlimeAttackingAnimation(EnemyType.GREEN_SLIME);
+
+
+        AnimationComponent animationComponent = new AnimationComponent();
+        animationComponent.animations.put(StateComponent.States.DEFAULT.ordinal(), idleAnimation);
+        animationComponent.animations.put(StateComponent.States.MOVING.ordinal(), movingAnimation);
+        animationComponent.animations.put(StateComponent.States.ATTACKING.ordinal(), attackingAnimation);
+
+
+        enemy.add(stateComponent);
+        enemy.add(animationComponent);
 
         getEngine().addEntity(enemy);
     }
