@@ -70,7 +70,7 @@ public class PlantingSystem extends IteratingSystem {
                 plantComponent.isPlanted = true;
                 tileComponent.isOccupied = true;
 
-                canonComponent.element = tileComponent.element;
+                canonComponent.element = tileComponent.getElement();
                 addAnimations(entity, canonComponent.element);
                 assets.manager.get(Assets.PLANTING_SFX, Sound.class).play();
                 break;

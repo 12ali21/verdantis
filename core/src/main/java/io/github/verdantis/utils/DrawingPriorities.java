@@ -11,4 +11,5 @@ public class DrawingPriorities {
     public static final int GUST = 6;
     public static final int TREE = 7;
     public static final int SEED_TRAY = 8; // and 9
+    public static final int ELEMENTS = 10;
 }

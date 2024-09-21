@@ -58,7 +58,7 @@ public class InputSystem extends EntitySystem implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         isClicked = true;
-        tmp2.set(screenX, screenY);
+        clickedPositionWorld.set(screenX, screenY);
         return false;
     }
 
@@ -101,7 +101,7 @@ public class InputSystem extends EntitySystem implements InputProcessor {
     }
 
     public Vector2 getClickedPositionInWorld() {
-        tmp3.set(tmp2.x, tmp2.y, 0);
+        tmp3.set(clickedPositionWorld.x, clickedPositionWorld.y, 0);
         tmp3 = camera.unproject(tmp3);
         tmp2.set(tmp3.x, tmp3.y);
         return tmp2;

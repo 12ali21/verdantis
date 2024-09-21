@@ -8,6 +8,7 @@ import io.github.verdantis.components.CanonComponent;
 import io.github.verdantis.components.ClickableComponent;
 import io.github.verdantis.components.DraggableComponent;
 import io.github.verdantis.components.EffectComponent;
+import io.github.verdantis.components.ElementsComponent;
 import io.github.verdantis.components.EnemyComponent;
 import io.github.verdantis.components.FreezingComponent;
 import io.github.verdantis.components.HealthComponent;
@@ -81,4 +82,7 @@ public class Mappers {
 
     public static final ComponentMapper<EffectComponent> effect = ComponentMapper.getFor(
             EffectComponent.class);
+
+    public static final ComponentMapper<ElementsComponent> elements = ComponentMapper.getFor(
+            ElementsComponent.class);
 }

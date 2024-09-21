@@ -30,6 +30,8 @@ public class Assets implements Disposable {
     public static final String WIND_BULLET = "wind_bullet";
     public static final String WIND_TILE = "wind_tile";
     public static final String YELLOW_SLIME = "yellow_slime";
+    public static final String ELEMENTS = "elements";
+    public static final String ELEMENTS_DISABLED = "elements_disabled";
 
     // animations
     public static final String FIRE_SHOOTING = "fire_shoot";
@@ -50,6 +52,8 @@ public class Assets implements Disposable {
     public static final String SLIME_ATTACK_SFX = "audio/sfx/slime_attack.wav";
     public static final String VICTORY_SFX = "audio/sfx/victory.wav";
     public static final String DEFEAT_SFX = "audio/sfx/game_over.wav";
+    public static final String APPLY_SPELL_SFX = "audio/sfx/apply_spell.wav";
+
 
     public static final String MAIN_MENU_MUSIC = "audio/music/dark_clouds.mp3";
     public static final String GAME_MUSIC = "audio/music/constance.mp3";
@@ -57,6 +61,8 @@ public class Assets implements Disposable {
     private static final String SPRITES_ATLAS = "sprites.atlas";
     private static final String CANON_SHOOTING_ATLAS = "animations/canon_shooting.atlas";
     private static final String EFFECTS_ATLAS = "animations/effects.atlas";
+    private static final String SLIME_ATLAS = "animations/slime.atlas";
+
 
     public final AssetManager manager;
     public final Random random = new RandomXS128();
@@ -69,6 +75,7 @@ public class Assets implements Disposable {
         manager.load(SPRITES_ATLAS, TextureAtlas.class);
         manager.load(CANON_SHOOTING_ATLAS, TextureAtlas.class);
         manager.load(EFFECTS_ATLAS, TextureAtlas.class);
+        manager.load(SLIME_ATLAS, TextureAtlas.class);
 
         // load sfx and music
         manager.load(FIRE_SFX, com.badlogic.gdx.audio.Sound.class);
@@ -81,6 +88,7 @@ public class Assets implements Disposable {
         manager.load(SLIME_ATTACK_SFX, com.badlogic.gdx.audio.Sound.class);
         manager.load(VICTORY_SFX, com.badlogic.gdx.audio.Sound.class);
         manager.load(DEFEAT_SFX, com.badlogic.gdx.audio.Sound.class);
+        manager.load(APPLY_SPELL_SFX, com.badlogic.gdx.audio.Sound.class);
 
         manager.load(MAIN_MENU_MUSIC, com.badlogic.gdx.audio.Music.class);
         manager.load(GAME_MUSIC, com.badlogic.gdx.audio.Music.class);

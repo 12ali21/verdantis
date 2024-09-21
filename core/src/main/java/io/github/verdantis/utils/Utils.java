@@ -3,6 +3,7 @@ package io.github.verdantis.utils;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.verdantis.components.TextureComponent;
@@ -65,6 +66,12 @@ public class Utils {
         entity.add(textureComponent);
         entity.add(transformComponent);
         return entity;
+    }
+
+    public static Element getRandomElement(boolean includeEarth) {
+        Element[] elements = Element.values();
+        int start = includeEarth ? 0 : 1;
+        return elements[MathUtils.random(start, elements.length - 1)];
     }
 
 }

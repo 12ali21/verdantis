@@ -26,23 +26,14 @@ public class ClickingSystem extends IteratingSystem {
         Vector2 clickedPos = inputSystem.getClickedPositionInWorld();
         boolean isClicked = inputSystem.isMouseDown();
 
-        tmpRect.x = transformComponent.position.x;
-        tmpRect.y = transformComponent.position.y;
-        tmpRect.width = transformComponent.width;
-        tmpRect.height = transformComponent.height;
-        tmpRect = scaleRectangle(tmpRect, 1.5f);
-        if (tmpRect.contains(clickedPos)) {
+        if (Mappers.elements.get(entity) != null) {
+            System.out.println(transformComponent.getRect() + " | " + clickedPos);
+        }
+        if (transformComponent.getRect().contains(clickedPos)) {
             clickableComponent.clicked = isClicked;
         } else {
             clickableComponent.clicked = false;
         }
     }
 
-    private Rectangle scaleRectangle(Rectangle rect, float scl) {
-        float w = rect.width * scl;
-        float h = rect.height * scl;
-        float x = rect.x + (rect.width - w) / 2;
-        float y = rect.y + (rect.height - h) / 2;
-        return new Rectangle(x, y, w, h);
-    }
 }

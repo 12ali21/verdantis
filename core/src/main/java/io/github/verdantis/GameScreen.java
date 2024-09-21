@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import java.util.Random;
 
 import io.github.verdantis.components.ClickableComponent;
+import io.github.verdantis.components.ElementsComponent;
 import io.github.verdantis.components.HealthComponent;
 import io.github.verdantis.components.RootComponent;
 import io.github.verdantis.components.SeedComponent;
@@ -28,6 +29,7 @@ import io.github.verdantis.systems.BulletSystem;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.EffectSystem;
+import io.github.verdantis.systems.ElementsSystem;
 import io.github.verdantis.systems.EnemyManagerSystem;
 import io.github.verdantis.systems.EnemySystem;
 import io.github.verdantis.systems.FireDamageSystem;
@@ -39,12 +41,14 @@ import io.github.verdantis.systems.RootsSystem;
 import io.github.verdantis.systems.SeedSystem;
 import io.github.verdantis.systems.ShootingSystem;
 import io.github.verdantis.systems.MovementSystem;
+import io.github.verdantis.systems.TileSystem;
 import io.github.verdantis.systems.UIManager;
 import io.github.verdantis.systems.WindSystem;
 import io.github.verdantis.utils.AnimationFactory;
 import io.github.verdantis.utils.Constants;
 import io.github.verdantis.utils.DrawingPriorities;
 import io.github.verdantis.utils.Element;
+import io.github.verdantis.utils.Mappers;
 import io.github.verdantis.utils.Utils;
 
 public class GameScreen extends ScreenAdapter {
@@ -108,7 +112,7 @@ public class GameScreen extends ScreenAdapter {
         RenderingSystem renderingSystem = new RenderingSystem();
         InputSystem inputSystem = new InputSystem(engine, gameState, renderingSystem.getCamera());
         Gdx.input.setInputProcessor(inputSystem);
-        uiManager = new UIManager(assets, gameState, 2);
+        uiManager = new UIManager(assets, gameState, 5);
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
         SeedSystem seedSystem = new SeedSystem(uiManager, inputSystem);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem);
@@ -116,7 +120,8 @@ public class GameScreen extends ScreenAdapter {
         ShootingSystem shootingSystem = new ShootingSystem(assets);
         MovementSystem movementSystem = new MovementSystem();
         BulletSystem bulletSystem = new BulletSystem(assets);
-        EnemyManagerSystem enemyManagerSystem = new EnemyManagerSystem(assets, gameState, EnemyManagerSystem.GameLevel.LEVEL_1);
+        EnemyManagerSystem enemyManagerSystem =
+                new EnemyManagerSystem(assets, gameState, EnemyManagerSystem.GameLevel.LEVEL_1);
         EnemySystem enemySystem = new EnemySystem(uiManager, assets);
         // Element systems
         FireDamageSystem fireDamageSystem = new FireDamageSystem();
@@ -125,6 +130,8 @@ public class GameScreen extends ScreenAdapter {
         RootsSystem rootsSystem = new RootsSystem(assets);
         AnimationSystem animationSystem = new AnimationSystem();
         EffectSystem effectSystem = new EffectSystem();
+        ElementsSystem elementsSystem = new ElementsSystem(assets, inputSystem, uiManager);
+        TileSystem tileSystem = new TileSystem(assets);
 
         engine.addSystem(renderingSystem);
         engine.addSystem(inputSystem);
@@ -144,6 +151,8 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(rootsSystem);
         engine.addSystem(animationSystem);
         engine.addSystem(effectSystem);
+        engine.addSystem(elementsSystem);
+        engine.addSystem(tileSystem);
     }
 
     private void createTree() {
@@ -283,14 +292,14 @@ public class GameScreen extends ScreenAdapter {
                     thisRegion = normalTile;
                 }
 
-                thisElement = Element.AIR;
                 Entity tileEntity =
                         Utils.createEntity(engine, thisRegion, Constants.PADDING_LEFT + i,
                                 Constants.PADDING_BOTTOM + j, DrawingPriorities.TILES
                         );
                 TileComponent tileComponent = new TileComponent();
-                tileComponent.element = thisElement;
+                tileComponent.setElement(thisElement);
                 if (j >= Constants.GREEN_LENGTH) {
+                    tileComponent.plantable = false;
                     tileComponent.isOccupied = true;
                 }
                 tileEntity.add(tileComponent);
@@ -319,6 +328,8 @@ public class GameScreen extends ScreenAdapter {
     private void createSeedTray() {
         TextureRegion bg_region = assets.spritesAtlas().findRegion(Assets.NORMAL_TILE);
         TextureRegion plant_region = assets.spritesAtlas().findRegion(Assets.GREEN_PLANT);
+        TextureRegion elements_region = assets.spritesAtlas().findRegion(Assets.ELEMENTS);
+
         float bg_scale = 0.85f;
         float plant_scale = 0.6f;
 
@@ -335,16 +346,31 @@ public class GameScreen extends ScreenAdapter {
         entity = Utils.createEntityCenter(engine, plant_region, middleX, middleY, plant_scale,
                 plant_scale, DrawingPriorities.SEED_TRAY + 1
         );
+        Mappers.transform.get(entity).rectScale = bg_scale / plant_scale;
+
         ClickableComponent clickableComponent = new ClickableComponent();
-        clickableComponent.containerScale = bg_scale / plant_scale;
         entity.add(clickableComponent);
 
         SeedComponent seedComponent = new SeedComponent();
         seedComponent.plantWidth = 0.8f;
         seedComponent.plantHeight = 0.8f;
         entity.add(seedComponent);
-
         engine.addEntity(entity);
+
+        Entity elements = Utils.createEntityCenter(engine, elements_region,
+                Constants.WORLD_WIDTH - Constants.PADDING_LEFT, middleY,
+                1, 1,
+                DrawingPriorities.SEED_TRAY + 2
+        );
+        clickableComponent = new ClickableComponent();
+        elements.add(clickableComponent);
+
+        ElementsComponent elementsComponent = new ElementsComponent();
+        elementsComponent.soulCost = 5;
+        elements.add(elementsComponent);
+
+        engine.addEntity(elements);
+
     }
 
     @Override
