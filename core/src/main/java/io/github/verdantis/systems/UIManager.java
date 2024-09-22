@@ -221,6 +221,9 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
 
     @Override
     public void onPauseChange(boolean paused) {
+        if (gameState.getState() == GameState.State.DEFEAT) {
+            return;
+        }
         if (paused) {
             stack.add(pauseTable);
         } else {

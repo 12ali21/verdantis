@@ -7,6 +7,7 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -30,6 +31,8 @@ public class EnemyManagerSystem extends EntitySystem {
     private final Assets assets;
     private final GameState gameState;
     private final AnimationFactory animationFactory;
+    private boolean endless = false;
+
     private final int level;
     private Array<Phase> level1Phases;
     private Array<Phase> level2Phases;
@@ -38,6 +41,7 @@ public class EnemyManagerSystem extends EntitySystem {
     private final RandomXS128 random = new RandomXS128();
 
     private boolean finishedLevel = false;
+    private Phase currentPhase;
 
     public EnemyManagerSystem(Assets assets, GameState gameState, AnimationFactory animationFactory,
             int levelNum
@@ -50,6 +54,10 @@ public class EnemyManagerSystem extends EntitySystem {
         initLevel1Phases();
         initLevel2Phases();
         initLevel3Phases();
+
+        if(levelNum == -1) {
+            endless = true;
+        }
     }
 
     private void initLevel1Phases() {
@@ -131,6 +139,11 @@ public class EnemyManagerSystem extends EntitySystem {
             assets.manager.get(Assets.DEFEAT_SFX, Sound.class).play();
         }
 
+        if (endless) {
+            updateEndless(deltaTime);
+            return;
+        }
+
         switch (level) {
             case 1:
                 if (!finishedLevel) {
@@ -168,6 +181,33 @@ public class EnemyManagerSystem extends EntitySystem {
         return false;
     }
 
+
+    private int phaseNum = 0;
+    private void updateEndless(float deltaTime) {
+        if (currentPhase == null || currentPhase.timer <= 0) {
+            float yellowSlimeChance;
+            if (phaseNum > 8) {
+                yellowSlimeChance = MathUtils.log2(phaseNum - 8) / 6f;
+                if (yellowSlimeChance > 0.8f) {
+                    yellowSlimeChance = 0.8f;
+                }
+            } else {
+                yellowSlimeChance = 0f;
+            }
+
+            float duration = (float) (10 * Math.exp(-0.05 * phaseNum));
+            if (duration < 2f)
+                duration = 2f;
+
+            EnemyType type = random.nextFloat() < yellowSlimeChance ? EnemyType.YELLOW_SLIME :
+                    EnemyType.GREEN_SLIME;
+
+            currentPhase = new Phase(duration, type, -1);
+            phaseNum++;
+        }
+        updatePhase(currentPhase, deltaTime);
+    }
+
     private void updateLevel(Array<Phase> phases, float deltaTime) {
         if (phases.size <= 0) {
             ImmutableArray<Entity> enemies =
@@ -176,21 +216,26 @@ public class EnemyManagerSystem extends EntitySystem {
                 finishedLevel = true;
             }
         } else {
-
-            Phase currentPhase = phases.get(0);
-            currentPhase.timer -= deltaTime;
-            if (currentPhase.timer <= 0) {
-                if (currentPhase.line < 0) {
-                    spawnEnemy(currentPhase.enemyToSpawn);
-                } else {
-                    spawnEnemy(currentPhase.enemyToSpawn,
-                            Constants.PADDING_LEFT + currentPhase.line + 0.5f,
-                            Constants.WORLD_HEIGHT
-                    );
-                }
+            currentPhase = phases.get(0);
+            if (updatePhase(currentPhase, deltaTime))
                 phases.removeIndex(0);
-            }
         }
+    }
+
+    private boolean updatePhase(Phase currentPhase, float deltaTime) {
+        currentPhase.timer -= deltaTime;
+        if (currentPhase.timer <= 0) {
+            if (currentPhase.line < 0) {
+                spawnEnemy(currentPhase.enemyToSpawn);
+            } else {
+                spawnEnemy(currentPhase.enemyToSpawn,
+                        Constants.PADDING_LEFT + currentPhase.line + 0.5f,
+                        Constants.WORLD_HEIGHT
+                );
+            }
+            return true;
+        }
+        return false;
     }
 
     private void spawnEnemy(EnemyType type) {

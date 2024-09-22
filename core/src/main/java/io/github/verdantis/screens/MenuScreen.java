@@ -68,7 +68,20 @@ public class MenuScreen extends ScreenAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 music.stop();
-                game.setScreen(new GameScreen(game, assets));
+                game.setScreen(new GameScreen(game, assets, false));
+            }
+        });
+
+        Label endlessLabel = new Label("Endless", getLabelStyle(64, "cinzel_bold"));
+        Button endlessButton = new Button(skin);
+        endlessButton.add(endlessLabel);
+        table.add(endlessButton).padBottom(20).row();
+
+        endlessButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                music.stop();
+                game.setScreen(new GameScreen(game, assets, true));
             }
         });
 

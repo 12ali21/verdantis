@@ -59,6 +59,7 @@ public class GameScreen extends ScreenAdapter {
     private Engine engine;
     private final Game game;
     private final Assets assets;
+    private final boolean endless;
     private GameState gameState;
     private final Random random = new RandomXS128();
     private UIManager uiManager;
@@ -69,9 +70,10 @@ public class GameScreen extends ScreenAdapter {
     private boolean screenDestroyed = false;
 
 
-    public GameScreen(Game game, Assets assets) {
+    public GameScreen(Game game, Assets assets, boolean endless) {
         this.game = game;
         this.assets = assets;
+        this.endless = endless;
     }
 
     @Override
@@ -82,9 +84,12 @@ public class GameScreen extends ScreenAdapter {
         engine = new Engine();
 
         // load current level number
-        prefs = Gdx.app.getPreferences(Constants.PREFS_NAME);
-        currentLevelNum = prefs.getInteger("level", 1);
-
+        if (!endless) {
+            prefs = Gdx.app.getPreferences(Constants.PREFS_NAME);
+            currentLevelNum = prefs.getInteger("level", 1);
+        } else {
+            currentLevelNum = -1;
+        }
         startGame();
     }
 
