@@ -168,6 +168,19 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
         Label pauseLabel = new Label("Paused", getLabelStyle(72, "cinzel_bold"));
         pauseTable.add(pauseLabel).row();
 
+
+        Label continueLabel = new Label("Continue", getLabelStyle(36, "cinzel_bold"));
+
+        Button continueButton = new Button(skin);
+        continueButton.add(continueLabel);
+        pauseTable.add(continueButton).fill().maxWidth(512).height(96).growX().padBottom(20f).row();
+        continueButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                gameState.changeState(GameState.State.RESUME);
+            }
+        });
+
         Label mainMenuLabel = new Label("Main Menu", getLabelStyle(36, "cinzel_bold"));
 
         Button mainMenuButton = new Button(skin);
@@ -179,6 +192,7 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
                 gameState.changeState(GameState.State.MAIN_MENU);
             }
         });
+
         return pauseTable;
     }
 

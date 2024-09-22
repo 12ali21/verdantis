@@ -30,7 +30,7 @@ public class Assets implements Disposable {
     public static final String WIND_BULLET = "wind_bullet";
     public static final String WIND_TILE = "wind_tile";
     public static final String YELLOW_SLIME = "yellow_slime";
-    public static final String ELEMENTS = "elements";
+    public static final String ELEMENTS_WHEEL = "elements";
     public static final String ELEMENTS_DISABLED = "elements_disabled";
 
     // animations

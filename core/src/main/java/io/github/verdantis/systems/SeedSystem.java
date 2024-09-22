@@ -63,6 +63,7 @@ public class SeedSystem extends IteratingSystem {
             seedEntity.add(plantComponent);
 
             HealthComponent healthComponent = new HealthComponent();
+            healthComponent.setHealth(4f);
             seedEntity.add(healthComponent);
 
             CanonComponent canonComponent = new CanonComponent();

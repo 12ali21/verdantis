@@ -3,7 +3,6 @@ package io.github.verdantis.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -40,7 +39,7 @@ public class ShootingSystem extends IteratingSystem {
         TransformComponent transformComponent = Mappers.transform.get(entity);
         TextureComponent textureComponent = Mappers.texture.get(entity);
 
-        textureComponent.region = getCanonRegion(canon.element);
+        textureComponent.region = getCanonRegion(canon.getElement());
 
         // Shoot a bullet
         canon.bulletTimer += deltaTime;
@@ -54,7 +53,7 @@ public class ShootingSystem extends IteratingSystem {
             canonCenter.add(canon.bulletOffset);
             // Create a bullet entity
             Entity bulletEntity =
-                    Utils.createEntityCenter(getEngine(), getBulletTexture(canon.element),
+                    Utils.createEntityCenter(getEngine(), getBulletTexture(canon.getElement()),
                             canonCenter.x, canonCenter.y,
                             BULLET_SIZE, BULLET_SIZE,
                             DrawingPriorities.BULLETS
@@ -62,7 +61,7 @@ public class ShootingSystem extends IteratingSystem {
             // Add bullet component
             BulletComponent bulletComponent = new BulletComponent();
             bulletComponent.damage = canon.bulletDamage;
-            bulletComponent.bulletType = canon.element;
+            bulletComponent.bulletType = canon.getElement();
             bulletEntity.add(bulletComponent);
 
             // Add velocity component

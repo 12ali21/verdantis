@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.github.verdantis.components.AnimationComponent;
 import io.github.verdantis.components.FreezingComponent;
 import io.github.verdantis.components.MovementComponent;
+import io.github.verdantis.components.OnFireComponent;
 import io.github.verdantis.components.StateComponent;
 import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.utils.Mappers;
@@ -27,6 +28,13 @@ public class FreezingSystem extends IteratingSystem {
         StateComponent stateComponent = Mappers.state.get(entity);
         AnimationComponent animationComponent = Mappers.animation.get(entity);
 
+        OnFireComponent onFireComponent = Mappers.onFire.get(entity);
+        if (onFireComponent != null) {
+            TextureComponent effectTexture = Mappers.texture.get(onFireComponent.effect);
+            effectTexture.color = TextureComponent.BLUE_FIRE_COLOR;
+            onFireComponent.fireDamage *= 1.2f;
+        }
+
         freezing.freezeTimer += deltaTime;
         if (freezing.freezeTimer >= freezing.freezeDuration) {
             movement.drag = freezing.originalDrag;
@@ -40,9 +48,9 @@ public class FreezingSystem extends IteratingSystem {
         } else if (!freezing.slowed) {
             // Slow down the entity
             freezing.originalDrag = movement.drag;
-            movement.drag *= freezing.slowFactor;
+            movement.acceleration.y /= freezing.slowFactor;
             freezing.slowed = true;
-            texture.color = new Color(0x23b0ffff);
+            texture.color = TextureComponent.FROZEN_COLOR;
 
             // Change the animation speed
             for (Animation<TextureRegion> animation : animationComponent.animations.values()) {

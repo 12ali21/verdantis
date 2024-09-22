@@ -33,7 +33,7 @@ import io.github.verdantis.systems.BulletSystem;
 import io.github.verdantis.systems.ClickingSystem;
 import io.github.verdantis.systems.DraggingSystem;
 import io.github.verdantis.systems.EffectSystem;
-import io.github.verdantis.systems.ElementsSystem;
+import io.github.verdantis.systems.ElementsWheelSystem;
 import io.github.verdantis.systems.EnemyManagerSystem;
 import io.github.verdantis.systems.EnemySystem;
 import io.github.verdantis.systems.FireDamageSystem;
@@ -160,7 +160,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void initializeSystems() {
         AnimationFactory animationFactory = new AnimationFactory(assets);
-        uiManager = new UIManager(assets, gameState, 10, currentLevelNum);
+        uiManager = new UIManager(assets, gameState, 5, currentLevelNum);
 
         RenderingSystem renderingSystem = new RenderingSystem();
         InputSystem inputSystem = new InputSystem(engine, uiManager, gameState, renderingSystem.getCamera());
@@ -183,7 +183,8 @@ public class GameScreen extends ScreenAdapter {
         RootsSystem rootsSystem = new RootsSystem(assets);
         AnimationSystem animationSystem = new AnimationSystem();
         EffectSystem effectSystem = new EffectSystem();
-        ElementsSystem elementsSystem = new ElementsSystem(assets, inputSystem, uiManager);
+        ElementsWheelSystem
+                elementsWheelSystem = new ElementsWheelSystem(assets, inputSystem, uiManager);
         TileSystem tileSystem = new TileSystem(assets);
 
         engine.addSystem(renderingSystem);
@@ -204,7 +205,7 @@ public class GameScreen extends ScreenAdapter {
         engine.addSystem(rootsSystem);
         engine.addSystem(animationSystem);
         engine.addSystem(effectSystem);
-        engine.addSystem(elementsSystem);
+        engine.addSystem(elementsWheelSystem);
         engine.addSystem(tileSystem);
     }
 
@@ -381,7 +382,7 @@ public class GameScreen extends ScreenAdapter {
     private void createSeedTray() {
         TextureRegion bg_region = assets.spritesAtlas().findRegion(Assets.NORMAL_TILE);
         TextureRegion plant_region = assets.spritesAtlas().findRegion(Assets.GREEN_PLANT);
-        TextureRegion elements_region = assets.spritesAtlas().findRegion(Assets.ELEMENTS);
+        TextureRegion elements_region = assets.spritesAtlas().findRegion(Assets.ELEMENTS_WHEEL);
 
         float bg_scale = 0.85f;
         float plant_scale = 0.6f;

@@ -51,8 +51,7 @@ public class InputSystem extends EntitySystem implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK) {
-            isPaused = !isPaused;
-            changePause(isPaused);
+            changePause(!isPaused);
             return true;
         }
         return false;
@@ -103,6 +102,7 @@ public class InputSystem extends EntitySystem implements InputProcessor {
 
 
     private void changePause(boolean paused) {
+        isPaused = paused;
         ImmutableArray<EntitySystem> systems = engine.getSystems();
         for (EntitySystem system : systems) {
             if (system instanceof UpdatesWhenPaused) {

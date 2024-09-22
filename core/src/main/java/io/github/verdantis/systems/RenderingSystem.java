@@ -62,7 +62,7 @@ public class RenderingSystem extends SortedIteratingSystem implements UpdatesWhe
         float originX = width / 2;
         float originY = height / 2;
 
-        if (textureComponent.color != null) {
+        if (textureComponent.color != Color.WHITE) {
             batch.setColor(textureComponent.color);
         }
         batch.draw(region, transform.position.x, transform.position.y,

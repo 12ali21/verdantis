@@ -14,16 +14,18 @@ import io.github.verdantis.components.TextureComponent;
 import io.github.verdantis.components.TileComponent;
 import io.github.verdantis.components.TransformComponent;
 import io.github.verdantis.utils.DrawingPriorities;
+import io.github.verdantis.utils.Element;
 import io.github.verdantis.utils.Mappers;
 import io.github.verdantis.utils.Utils;
 
-public class ElementsSystem extends IteratingSystem {
+public class ElementsWheelSystem extends IteratingSystem {
     private final Assets assets;
     private final InputSystem inputSystem;
     private final UIManager uiManager;
     private boolean dragging;
+    private int lastElementIndex = 1;
 
-    public ElementsSystem(Assets assets, InputSystem inputSystem, UIManager uiManager) {
+    public ElementsWheelSystem(Assets assets, InputSystem inputSystem, UIManager uiManager) {
         super(Family.all(ElementsComponent.class).get());
         this.assets = assets;
         this.inputSystem = inputSystem;
@@ -50,7 +52,7 @@ public class ElementsSystem extends IteratingSystem {
                     if (tileTransform.getRect().contains(transform.getCenter())) {
                         if (tileComponent.plantable) {
                             // apply a random elements to tile
-                            tileComponent.setElement(Utils.getRandomElement(false));
+                            tileComponent.setElement(getElement());
                             assets.manager.get(Assets.APPLY_SPELL_SFX, Sound.class).play();
                             elementApplied = true;
                             break;
@@ -71,7 +73,7 @@ public class ElementsSystem extends IteratingSystem {
                 texture.region = assets.spritesAtlas().findRegion(Assets.ELEMENTS_DISABLED);
                 return;
             } else {
-                texture.region = assets.spritesAtlas().findRegion(Assets.ELEMENTS);
+                texture.region = assets.spritesAtlas().findRegion(Assets.ELEMENTS_WHEEL);
             }
 
             ClickableComponent clickable = Mappers.clickable.get(entity);
@@ -79,7 +81,7 @@ public class ElementsSystem extends IteratingSystem {
                 dragging = true;
                 clickable.clicked = false;
                 Entity draggedEntity = Utils.createEntity(getEngine(),
-                        assets.spritesAtlas().findRegion(Assets.ELEMENTS), transform.position.x,
+                        assets.spritesAtlas().findRegion(Assets.ELEMENTS_WHEEL), transform.position.x,
                         transform.position.y,
                         DrawingPriorities.ELEMENTS
                 );
@@ -93,5 +95,14 @@ public class ElementsSystem extends IteratingSystem {
                 uiManager.changeSoulAmount(-elements.soulCost);
             }
         }
+    }
+
+    private Element getElement() {
+        Element[] elements = Element.values();
+        lastElementIndex++;
+        if (lastElementIndex >= elements.length) {
+            lastElementIndex = 1;
+        }
+        return elements[lastElementIndex];
     }
 }

@@ -196,8 +196,8 @@ public class EnemyManagerSystem extends EntitySystem {
             }
 
             float duration = (float) (10 * Math.exp(-0.05 * phaseNum));
-            if (duration < 2f)
-                duration = 2f;
+            if (duration < 1.5f)
+                duration = 1.5f;
 
             EnemyType type = random.nextFloat() < yellowSlimeChance ? EnemyType.YELLOW_SLIME :
                     EnemyType.GREEN_SLIME;
@@ -266,6 +266,7 @@ public class EnemyManagerSystem extends EntitySystem {
         } else if (type == EnemyType.YELLOW_SLIME) {
             healthComponent.setHealth(20f);
             enemyComponent.damage = 1.5f;
+            enemyComponent.maxSpeed = 0.7f;
         }
         enemy.add(healthComponent);
 

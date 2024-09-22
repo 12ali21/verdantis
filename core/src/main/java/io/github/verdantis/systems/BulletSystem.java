@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -86,6 +85,7 @@ public class BulletSystem extends IteratingSystem {
         OnFireComponent onFireComponent = Mappers.onFire.get(enemy);
         if (onFireComponent == null) {
             onFireComponent = new OnFireComponent();
+            onFireComponent.fireDamage = 0.8f;
             onFireComponent.effect =
                     getFireEffect(Mappers.transform.get(enemy).getCenter());
             onFireComponent.effectOffset.set(0, 0.2f);
@@ -106,7 +106,7 @@ public class BulletSystem extends IteratingSystem {
         );
 
         TextureComponent textureComponent = Mappers.texture.get(effect);
-        textureComponent.color = new Color(1, 1, 1, 0.2f);
+        textureComponent.color = TextureComponent.FIRE_COLOR;
         textureComponent.textureScale = 1.5f;
 
         StateComponent stateComponent = new StateComponent();
@@ -164,7 +164,7 @@ public class BulletSystem extends IteratingSystem {
                 contactPos.x - 0.5f,
                 contactPos.y, 1f, 2f, DrawingPriorities.GUST
         );
-        Mappers.texture.get(effect).color = new Color(1, 1, 1, 0.5f);
+        Mappers.texture.get(effect).color = TextureComponent.WIND_COLOR;
 
 
         StateComponent stateComponent = new StateComponent();

@@ -46,14 +46,12 @@ public class PlantingSystem extends IteratingSystem {
 
         if (plantComponent.isPlanted) {
             TileComponent tileComponent = Mappers.tile.get(plantComponent.occupyingTile);
-            if (tileComponent.getElement() != canonComponent.element) {
-                canonComponent.element = tileComponent.getElement();
+            if (tileComponent.getElement() != canonComponent.getElement()) {
+                canonComponent.setElement(tileComponent.getElement());
                 // reapply animations
                 entity.remove(AnimationComponent.class);
-                addAnimations(entity, canonComponent.element);
+                addAnimations(entity, canonComponent.getElement());
             }
-
-
 
             if (healthComponent.getHealth() <= 0) {
                 Mappers.tile.get(plantComponent.occupyingTile).isOccupied = false;
@@ -80,8 +78,8 @@ public class PlantingSystem extends IteratingSystem {
                 plantComponent.isPlanted = true;
                 tileComponent.isOccupied = true;
 
-                canonComponent.element = tileComponent.getElement();
-                addAnimations(entity, canonComponent.element);
+                canonComponent.setElement(tileComponent.getElement());
+                addAnimations(entity, canonComponent.getElement());
                 assets.manager.get(Assets.PLANTING_SFX, Sound.class).play();
                 break;
             }
