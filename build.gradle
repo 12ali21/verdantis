@@ -10,6 +10,7 @@ buildscript {
   }
   dependencies {
     classpath "com.android.tools.build:gradle:8.1.4"
+    classpath "org.docstr:gwt-gradle-plugin:$gwtPluginVersion"
 
   }
 }
@@ -58,7 +59,7 @@ configure(subprojects - project(':android')) {
 
 subprojects {
   version = '$projectVersion'
-  ext.appName = 'Verdantis'
+  ext.appName = 'verdantis_browser'
   repositories {
     mavenCentral()
     maven { url 'https://s01.oss.sonatype.org' }
@@ -70,4 +71,4 @@ subprojects {
   }
 }
 
-eclipse.project.name = 'Verdantis' + '-parent'
+eclipse.project.name = 'verdantis_browser' + '-parent'

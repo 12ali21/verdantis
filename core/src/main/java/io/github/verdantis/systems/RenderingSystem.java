@@ -25,7 +25,7 @@ import io.github.verdantis.utils.UpdatesWhenPaused;
 public class RenderingSystem extends SortedIteratingSystem implements UpdatesWhenPaused {
     public static final int PPM = 256; // Pixel per meters
     private final Camera camera;
-    private final Viewport viewport;
+    private final FitViewport viewport;
     private final SpriteBatch batch;
 
     public RenderingSystem() {
@@ -86,5 +86,9 @@ public class RenderingSystem extends SortedIteratingSystem implements UpdatesWhe
     @Override
     public void onPauseChange(boolean paused) {
         // nothing
+    }
+
+    public FitViewport getViewport() {
+        return viewport;
     }
 }

@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.RandomXS128;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 
 import java.util.Random;
@@ -163,7 +164,7 @@ public class GameScreen extends ScreenAdapter {
         uiManager = new UIManager(assets, gameState, 5, currentLevelNum);
 
         RenderingSystem renderingSystem = new RenderingSystem();
-        InputSystem inputSystem = new InputSystem(engine, uiManager, gameState, renderingSystem.getCamera());
+        InputSystem inputSystem = new InputSystem(engine, uiManager, gameState, renderingSystem.getViewport());
         ClickingSystem clickingSystem = new ClickingSystem(inputSystem);
         SeedSystem seedSystem = new SeedSystem(uiManager, inputSystem);
         DraggingSystem draggingSystem = new DraggingSystem(inputSystem);
@@ -429,6 +430,7 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(0, 0, 0, 1);
         engine.update(delta);
     }
 

@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -197,16 +196,22 @@ public class UIManager extends EntitySystem implements UpdatesWhenPaused {
     }
 
     public static Label.LabelStyle getLabelStyle(int fontSize, String fontName) {
-        FreeTypeFontGenerator generator =
-                new FreeTypeFontGenerator(Gdx.files.internal("ui/" + fontName + ".ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter =
-                new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = fontSize;
-        BitmapFont font = generator.generateFont(parameter);
-
+//        FreeTypeFontGenerator generator =
+//                new FreeTypeFontGenerator(Gdx.files.internal("ui/" + fontName + ".ttf"));
+//        FreeTypeFontGenerator.FreeTypeFontParameter parameter =
+//                new FreeTypeFontGenerator.FreeTypeFontParameter();
+//        parameter.size = fontSize;
+//        BitmapFont font = generator.generateFont(parameter);
+//
+//        Label.LabelStyle labelStyle = new Label.LabelStyle();
+//        labelStyle.font = font;
+//
+//        return labelStyle;
+        BitmapFont font = new BitmapFont(Gdx.files.internal("ui/font/" + fontName + ".fnt"));
+        // scale font
+        font.getData().setScale(fontSize / 64f);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
-
         return labelStyle;
     }
 

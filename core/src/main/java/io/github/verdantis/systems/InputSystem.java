@@ -10,6 +10,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import io.github.verdantis.GameState;
 import io.github.verdantis.utils.UpdatesWhenPaused;
@@ -18,6 +19,7 @@ public class InputSystem extends EntitySystem implements InputProcessor {
     private final Engine engine;
     private final Camera camera;
     private final GameState gameState;
+    private final FitViewport viewport;
     private boolean isClicked = false;
     private Vector2 tmp2 = new Vector2();
     private final Vector2 clickedPositionWorld = new Vector2();
@@ -27,8 +29,9 @@ public class InputSystem extends EntitySystem implements InputProcessor {
     private InputMultiplexer inputMux;
     private InputState currentState = InputState.DEFAULT;
 
-    public InputSystem(Engine engine, UIManager uiManager, GameState gameState, Camera camera) {
+    public InputSystem(Engine engine, UIManager uiManager, GameState gameState, FitViewport viewport) {
         this.gameState = gameState;
+        this.viewport = viewport;
 
         inputMux = new InputMultiplexer();
         inputMux.addProcessor(this);
@@ -44,7 +47,8 @@ public class InputSystem extends EntitySystem implements InputProcessor {
         });
 
         this.engine = engine;
-        this.camera = camera;
+        this.camera = viewport.getCamera();
+
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
     }
 
@@ -120,14 +124,14 @@ public class InputSystem extends EntitySystem implements InputProcessor {
 
     public Vector2 getClickedPositionInWorld() {
         tmp3.set(clickedPositionWorld.x, clickedPositionWorld.y, 0);
-        tmp3 = camera.unproject(tmp3);
+        tmp3 = viewport.unproject(tmp3);
         tmp2.set(tmp3.x, tmp3.y);
         return tmp2;
     }
 
     public Vector2 getMousePositionInWorld() {
         tmp3.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        tmp3 = camera.unproject(tmp3);
+        tmp3 = viewport.unproject(tmp3);
         tmp2.set(tmp3.x, tmp3.y);
         return tmp2;
     }

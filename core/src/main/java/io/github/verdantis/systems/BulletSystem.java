@@ -58,7 +58,7 @@ public class BulletSystem extends IteratingSystem {
                 enemyHealth.setHealth(enemyHealth.getHealth() - bulletComponent.damage);
                 if (bulletComponent.bulletType == Element.FIRE) {
                     dealFireDamage(enemy);
-                    assets.manager.get(Assets.FIRE_SFX, Sound.class).play();
+                    assets.manager.get(Assets.FIRE_SFX, Sound.class).play(0.6f);
                 } else if (bulletComponent.bulletType == Element.ICE) {
                     dealIceDamage(enemy);
                     assets.manager.get(Assets.FREEZE_SFX, Sound.class).play();
